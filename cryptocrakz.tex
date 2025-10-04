@@ -1,0 +1,782 @@
+% Hans's stolen version of Martijn's tikz setup
+%Potentially useful resource
+%https://nymity.ch/tikz/
+
+\usepackage{pgfpages}
+  \usepackage{color}
+  \usepackage{colortbl}
+  \usepackage{multirow}
+  \usepackage{xspace}
+
+  \usepackage{rotating}
+  \usepackage{wasysym}
+  % \usepackage{marvosym} %% MSM: causes a conflict with \Cross already being defined elsewhere;
+                          %%      unclear which symbol relies on marvosym package...
+
+  \usepackage{tikz}
+    \usetikzlibrary{calc,scopes,arrows.meta,chains,matrix,positioning,fit,backgrounds,fadings}
+    \usetikzlibrary{shapes,shapes.geometric,shapes.symbols,shapes.misc,shapes.callouts}
+    \usetikzlibrary{decorations.markings,decorations.pathmorphing,decorations.pathreplacing,decorations.shapes}
+
+    \pgfdeclarelayer{background}
+    \pgfdeclarelayer{channel}
+    \pgfdeclarelayer{parties}
+    \pgfdeclarelayer{timeline}
+    \pgfdeclarelayer{reduction}
+    \pgfdeclarelayer{foreground}
+    % \pgfsetlayers{background,reduction,main,foreground}
+    \pgfsetlayers{background,channel,parties,timeline,reduction,main,foreground}
+
+\newcommand{\darkcolor}[2]{{\textcolor{#1!50!black}{#2}}}
+  \colorlet{redshaded}{red!25!white}
+  \colorlet{shaded}{black!25!white}
+  \colorlet{shadedshaded}{black!10!white}
+  \colorlet{blackshaded}{black!40!white}
+
+  \colorlet{darkred}{red!80!black}
+  \colorlet{darkblue}{blue!80!black}
+  \colorlet{darkgreen}{green!80!black}
+  \colorlet{darkerred}{red!50!black}
+  \colorlet{darkerblue}{blue!50!black}
+  \colorlet{darkergreen}{green!50!black}
+
+  \colorlet{washred}{red!20!white}
+  \colorlet{washblue}{blue!20!white}
+  \colorlet{washgreen}{green!20!white}
+  \colorlet{washgray}{gray!20!white}
+
+  \colorlet{drawprim}{darkblue}
+  \colorlet{fillprimhi}{white}
+  \colorlet{fillprimlo}{blue!20!black!10}
+
+  \colorlet{drawcol}{black!70}
+  \colorlet{fillcol}{black!5!blue!5}
+
+  %\colorlet{tightcol}{blue!50!black}
+  %\colorlet{loosecol}{red!80!black}
+  \colorlet{tightcol}{blue}
+  \colorlet{loosecol}{red}
+
+\makeatletter
+  \pgfdeclareshape{xor sign}
+  {
+    \inheritsavedanchors[from=circle] % this is nearly a circle
+    \inheritanchorborder[from=circle]
+    \inheritanchor[from=circle]{north}
+    \inheritanchor[from=circle]{north west}
+    \inheritanchor[from=circle]{north east}
+    \inheritanchor[from=circle]{center}
+    \inheritanchor[from=circle]{west}
+    \inheritanchor[from=circle]{east}
+    \inheritanchor[from=circle]{mid}
+    \inheritanchor[from=circle]{mid west}
+    \inheritanchor[from=circle]{mid east}
+    \inheritanchor[from=circle]{base}
+    \inheritanchor[from=circle]{base west}
+    \inheritanchor[from=circle]{base east}
+    \inheritanchor[from=circle]{south}
+    \inheritanchor[from=circle]{south west}
+    \inheritanchor[from=circle]{south east}
+    \inheritbackgroundpath[from=circle]
+    \foregroundpath{
+      \centerpoint%
+      \pgf@xc=\pgf@x%
+      \pgf@yc=\pgf@y%
+      \pgfutil@tempdima=\radius%
+      \pgfmathsetlength{\pgf@xb}{\pgfkeysvalueof{/pgf/outer xsep}}%
+      \pgfmathsetlength{\pgf@yb}{\pgfkeysvalueof{/pgf/outer ysep}}%
+      \ifdim\pgf@xb<\pgf@yb%
+        \advance\pgfutil@tempdima by-\pgf@yb%
+      \else%
+        \advance\pgfutil@tempdima by-\pgf@xb%
+      \fi%
+      \pgfpathmoveto{\pgfpointadd{\pgfqpoint{\pgf@xc}{\pgf@yc}}{\pgfqpoint{-1\pgfutil@tempdima}{0\pgfutil@tempdima}}}
+      \pgfpathlineto{\pgfpointadd{\pgfqpoint{\pgf@xc}{\pgf@yc}}{\pgfqpoint{1\pgfutil@tempdima}{0\pgfutil@tempdima}}}
+      \pgfpathmoveto{\pgfpointadd{\pgfqpoint{\pgf@xc}{\pgf@yc}}{\pgfqpoint{0\pgfutil@tempdima}{-1\pgfutil@tempdima}}}
+      \pgfpathlineto{\pgfpointadd{\pgfqpoint{\pgf@xc}{\pgf@yc}}{\pgfqpoint{0\pgfutil@tempdima}{1\pgfutil@tempdima}}}
+    }
+  }
+
+  \pgfdeclareshape{enc box}
+  {
+    \inheritsavedanchors[from=rectangle] % this is nearly a circle
+    \inheritanchorborder[from=rectangle]
+    \inheritanchor[from=rectangle]{north}
+    \inheritanchor[from=rectangle]{north west}
+    \inheritanchor[from=rectangle]{north east}
+    \inheritanchor[from=rectangle]{center}
+    \inheritanchor[from=rectangle]{west}
+    \inheritanchor[from=rectangle]{east}
+    \inheritanchor[from=rectangle]{mid}
+    \inheritanchor[from=rectangle]{mid west}
+    \inheritanchor[from=rectangle]{mid east}
+    \inheritanchor[from=rectangle]{base}
+    \inheritanchor[from=rectangle]{base west}
+    \inheritanchor[from=rectangle]{base east}
+    \inheritanchor[from=rectangle]{south}
+    \inheritanchor[from=rectangle]{south west}
+    \inheritanchor[from=rectangle]{south east}
+    \backgroundpath{
+      \southwest \pgf@xa=\pgf@x \pgf@ya=\pgf@y%
+      \northeast \pgf@xb=\pgf@x \pgf@yb=\pgf@y%
+      \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+      \pgfpathlineto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+      \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+      \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@ya}}
+      \pgfpathclose
+      \begin{\pgfscope}
+      \pgfsetlinewidth{2pt}
+      \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@yb}}
+      \pgflineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+      \end{\pgfscope}
+    }
+  }
+\makeatother
+
+\tikzfading[name=fade out,
+inner color=transparent!0,
+outer color=transparent!100]
+
+%%
+%% Common typesetting commands
+%%
+\tikzset{
+  ghost/.style={ %creates an invisible element of the correct size
+    draw opacity = 0,
+    fill opacity = 0,
+    text opacity = 0
+  },
+  ghostly/.style={ %creates an invisible element of the correct size
+    draw opacity = 0.2,
+    fill opacity = 0.2,
+    text opacity = 0
+  },
+  hv path/.style={to path={-| (\tikztotarget)},rounded corners},
+  vh path/.style={to path={|- (\tikztotarget)},rounded corners},
+  flowGeneric/.style={
+    draw, % draw=black,
+    preaction={%under-highlight
+      draw,
+      white,
+      stealth-stealth,
+      double=white,
+      double distance=2\pgflinewidth,
+    },
+    rounded corners=2pt,
+    nodes={above=-1mm,midway,},
+  },
+  noflow/.style={   flowGeneric},
+  flow/.style={     flowGeneric, >=stealth,->},
+  revflow/.style={  flowGeneric, >=stealth,<-},
+}
+
+\newcommand{\flow}{\draw[flow]}
+
+%%
+%%  Commands for typesetting security games
+%%
+\tikzset{
+  square matrix/.style={
+    row sep   = 3mm,
+    column sep= 3mm,
+  },
+  setup/.style={
+    rectangle, rounded corners,
+    minimum width={1cm},minimum height={1cm},
+    draw=white,
+    inner color=fillprimhi,
+    outer color=fillprimlo,
+    align={center},anchor={center},
+  },
+  redcode/.style={
+    rectangle, rounded corners,
+    minimum width={1cm},minimum height={1cm},
+    draw=white,
+    inner color=fillprimhi,
+    outer color=fillprimlo,
+    align={center},anchor={center},
+  },
+  challenge/.style={
+    rectangle, rounded corners,
+    minimum width={1cm},minimum height={1cm},
+    draw=drawprim,
+    top color=fillprimhi,
+    bottom color=fillprimlo,
+    align={center},anchor={center},
+  },
+  power/.style={
+    rectangle, rounded corners,
+    minimum width={1cm},minimum height={1cm},
+    draw=darkergreen,
+    top color=fillprimhi,
+    bottom color=washgreen,
+    align={center},anchor={center},
+  },
+  group/.style={
+    rectangle, minimum width=9mm, minimum height=7mm,
+    very thick,
+    draw=red!30!black!10,
+    fill=yellow!20!red!10,
+    anchor=center,
+  },
+  reduction/.style={
+    rectangle, minimum width=9mm, minimum height= 7mm, rounded corners=3mm,
+    thick,draw=black,
+    top color=fillprimhi,
+    bottom color=yellow!20!red!10,
+    % font=\ttfamily,
+    anchor=center
+  },
+  adv/.style={
+    rectangle, minimum width=9mm, minimum height= 7mm, rounded corners=3mm,
+    thick,draw=black,
+    top color=washred,
+    bottom color=fillprimhi,
+    % font=\ttfamily,
+    anchor=center
+  },
+  inout/.style={
+    rectangle,anchor=center
+  },
+  ghost/.style={
+    draw opacity = 0,
+    fill opacity = 0,
+    text opacity = 0
+  },
+  dline/.style={
+    very thick, dashed,
+    draw=red!30!black!10,
+  },
+  tip/.style={->,rounded corners},
+}
+
+%%
+%%  Commands for typesetting syntax diagrams
+%%
+\newcommand{\boxheight}{.5cm}
+\tikzset{
+  alg/.style={
+    rectangle,
+    align={center},
+    inner sep = 0.1cm,
+    minimum height= {\boxheight},
+    rounded corners=1mm,
+    thick,draw=drawprim,
+    top color=fillprimhi,
+    bottom color=fillprimlo,
+    anchor=center,
+  },
+  io/.style={
+    rectangle,anchor=center
+  },
+  otip/.style={->,rounded corners},
+  stip/.style={->,shorten >=1pt,rounded corners},
+  spit/.style={<-,shorten <=1pt,rounded corners},
+}
+
+%%
+%% Commands for typesetting timeline diagrams
+%%
+\tikzset{
+  event/.style={
+    circle,
+    minimum width={1mm},
+    draw=black,
+    fill=black,
+    align={center},anchor={center},
+  },
+  timeline/.style={
+    rectangle,
+    minimum width={1.5mm},
+    % minimum height={10mm},
+    draw=white,
+    fill=white!50!black,
+    align={center},anchor={north},
+  },
+  outro/.style={
+    rectangle,
+    minimum width={1.5mm},
+    minimum height={10mm},
+    draw=white,
+    top color=white!50!black,
+    bottom color=white,
+    align={center},anchor={north},
+  },
+  intro/.style={
+    rectangle,
+    minimum width={1.5mm},
+    minimum height={10mm},
+    draw=white,
+    top color=white,
+    bottom color=white!50!black,
+    align={center},anchor={south},
+  },
+  party/.style={
+    rectangle,
+    rounded corners = 2mm,
+    ultra thick,
+    dotted,
+    draw=black,
+    fill=white,
+    anchor=center
+  },
+  eve/.style={
+    rectangle,
+    rounded corners = 2mm,
+    ultra thick,
+    dotted,
+    draw=orange,
+    anchor=center
+  },
+  public/.style={
+    arrows = {-Stealth[inset=2pt, angle=30:10pt,scale=1.5]},
+    orange,
+    line width=1.0pt,
+    double distance=1.5pt,
+  },
+  secure/.style={
+    arrows = {-Stealth[inset=2pt, angle=30:10pt,scale=2]},
+    purple,
+    line width=0.5pt,
+    double distance=1.5pt,
+  },
+  % test/.style={
+  %   arrows = {-Stealth[inset=2pt, angle=30:10pt,scale=1]},
+  %   orange,
+  %   line width=0.5pt,
+  %   double distance=1.5pt,
+  % },
+  clear/.style={
+    white,
+    line width=0.5pt,
+    double distance=0.5pt,
+  },
+}
+
+%%
+%% Command for typesetting schemes
+%% MSM: might want to integrate enc/dec styles with alg style from syntax?
+%%
+\tikzset{
+  xor/.style={
+    shape = xor sign, minimum size=4mm,
+    thick,inner sep=0pt,anchor=center,draw=drawcol,
+  },
+  point/.style={coordinate},
+  enc/.style={
+    rectangle,
+    align={center},
+    inner sep = 0.1cm,
+    minimum height= {\boxheight},
+    rounded corners=1mm,
+    thick,draw=drawprim,
+    top color=fillprimhi,
+    bottom color=fillprimlo,
+    anchor=center,
+  },
+  dec/.style={
+    rectangle,
+    align={center},
+    inner sep = 0.1cm,
+    minimum height= {\boxheight},
+    rounded corners=1mm,
+    thick,draw=drawprim,
+    top color=fillprimlo,
+    bottom color=fillprimhi,
+    % font=\ttfamily,
+    anchor=center
+  },
+  mode/.style={
+    rectangle,
+    align={center},
+    inner sep = 0.1cm,
+    minimum height= {\boxheight},
+    rounded corners=3mm,
+    thick,draw=drawprim,
+    top color=fillprimhi,
+    bottom color=fillprimlo,
+    anchor=center,
+  },
+  prepost/.style={
+    rectangle,
+    align={left},
+    anchor=west,
+  },
+}
+
+%% MSM: garbage collection of old tikz commands...
+%% WARNING: stealth is deprecated, use Stealth instead!
+\iffalse
+  \tikzset{
+    mode matrix/.style={
+      matrix of nodes,
+      nodes in empty cells,
+      row sep=2mm,
+      column sep=5mm,
+      align={center},
+      text centered,
+      inner sep=0.1cm,
+      % draw=black,
+      % rectangle,
+    },
+    box/.style={
+      align={center},
+      inner sep=0.1cm,
+      minimum height={\boxheight},
+      draw=black,
+      rectangle,
+      %rounded corners,
+    },
+    diagram matrix/.style={
+    	row sep   = 2mm,
+    	column sep= 5mm,
+    },
+    square matrix/.style={
+      row sep   = 3mm,
+      column sep= 3mm,
+    },
+    %
+    flowGeneric/.style={
+      draw=black,
+      preaction={%under-highlight
+        draw,
+        white,
+        stealth-stealth,
+        double=white,
+        double distance=2\pgflinewidth,
+      },
+      rounded corners=2pt,
+      nodes={above=-1mm,midway,},
+    },
+    flow/.style={     flowGeneric, >=stealth,->},
+    revflow/.style={  flowGeneric, >=stealth,<-},
+    possible/.style={
+      flow, densely dotted},
+    lgap/.style={ xshift=-8mm },
+    rgap/.style={ xshift=+3mm },
+    %
+    XOR/.style={
+      draw,
+      fill=white,
+      minimum size=13pt,
+      circle,
+      append after command={
+        [shorten >=\pgflinewidth, shorten <=\pgflinewidth,]
+        (\tikzlastnode.north) edge (\tikzlastnode.south)
+        (\tikzlastnode.east) edge (\tikzlastnode.west)
+      }
+    },
+    Fbox/.style={box},
+    diagram node/.style={
+      draw={black}, rectangle, rounded corners,
+      minimum width={1cm},minimum height={1cm},
+      fill={none}, fill opacity={0.2}, text opacity={1},
+      align={center},anchor={center},
+    },
+    onslide/.code args={<#1>#2}{%
+    \only<#1>{\pgfkeysalso{#2}} % \pgfkeysalso doesn't change the path
+    },
+  }
+
+  \tikzset{
+    challenge/.style={
+      rectangle, rounded corners,
+      minimum width={1cm},minimum height={1cm},
+      draw=drawprim,
+      top color=fillprimhi,
+      bottom color=fillprimlo,
+      align={center},anchor={center},
+    },
+    power/.style={
+      rectangle, rounded corners,
+      minimum width={1cm},minimum height={1cm},
+      draw=darkergreen,
+      top color=fillprimhi,
+      bottom color=washgreen,
+      align={center},anchor={center},
+    },
+    group/.style={
+      rectangle, minimum width=9mm, minimum height=7mm,
+      very thick,
+      draw=red!30!black!10,
+      fill=yellow!20!red!10,
+      anchor=center,
+    },
+    hidden/.style={
+      rectangle,
+      fill=white,
+      opacity=0.8,
+    },
+    highlight/.style={
+      rectangle,
+      fill = yellow,
+      path fading=fade out,
+    },
+    cluster/.style={
+      rectangle,
+      fill = green,
+      path fading=fade out,
+    },
+    whiten/.style={
+      rectangle,
+      fill=white,
+      opacity=1.0,
+    },
+    dline/.style={
+      very thick, dashed,
+      draw=red!30!black!10,
+    },
+    func/.style={
+      rectangle,
+      align={center},
+      inner sep = 0.1cm,
+      minimum height= {\boxheight},
+      rounded corners=1mm,
+      thick,draw=drawprim,
+      top color=fillprimhi,
+      bottom color=fillprimlo,
+      anchor=center,
+    },
+    enc/.style={
+      rectangle,
+      align={center},
+      inner sep = 0.1cm,
+      minimum height= {\boxheight},
+      rounded corners=1mm,
+      thick,draw=drawprim,
+      top color=fillprimhi,
+      bottom color=fillprimlo,
+      anchor=center,
+    },
+    emptyfunc/.style={
+      rectangle, minimum width=9mm, minimum height=7mm,
+      thick,
+      draw=drawprim,
+      anchor=center
+    },
+    blackbox/.style={
+      rectangle,aspect=1, ultra thick, draw=black, fill=black!30, anchor=center
+    },
+    sbox/.style={
+      rectangle,aspect=1, thick, draw=black, anchor=center, fill=washii
+    },
+    pbox/.style={
+      rectangle,aspect=1, thick, draw=black, anchor=center, fill=white
+    },
+    pibox/.style={
+      rectangle,aspect=1, thick, draw=black, anchor=center, fill=orange!20!white
+    },
+    rbox/.style={
+      rectangle, rounded corners=3mm, aspect=1, ultra thick, draw=green!50!black, anchor=center, fill=green!10!white
+    },
+    fbox/.style={
+      rectangle, rounded corners=2mm, aspect=1, thick, draw=black, anchor=center, fill=blue!30!white
+    },
+    oracle/.style= {
+      cloud, cloud ignores aspect, cloud puffs=11, draw=green, thick, fill=green!20, text width=18mm, text centered
+    },
+    codacle/.style= {
+      tape, draw=green, thick, fill=green!20, text width=18mm, text centered
+    },
+    % MSM: repurposed party
+    % party/.style={
+    %   rectangle,aspect=1, ultra thick, draw=black, fill=green!30, anchor=center
+    % },
+    partyin/.style={cloud callout, cloud puffs=15, aspect=2.5, cloud puff arc=120, shading=ball,text=white,callout relative pointer={#1}
+    },
+    partyout/.style={ellipse callout, aspect=2.5, shading=ball,text=white,callout relative pointer={#1}
+    },
+    dec/.style={
+      rectangle,minimum width=7mm, minimum height= 7mm,% rounded corners=3mm,
+      thick,draw=drawprim,
+      top color=fillprimlo,
+      bottom color=fillprimhi,
+      % font=\ttfamily,
+      anchor=center
+    },
+    enc2/.style={
+      rectangle,minimum width=7mm, minimum height= 7mm,% rounded corners=3mm,
+      thick,draw=green!80!white,
+      top color=green!80!white,
+      bottom color=green!80!white,
+      % font=\ttfamily,
+      anchor=center
+    },
+    denc/.style={
+      rectangle,minimum width=14mm, minimum height= 7mm,% rounded corners=3mm,
+      thick,draw=drawprim,
+      top color=fillprimhi,
+      bottom color=fillprimlo,
+      % font=\ttfamily,
+      anchor=center
+    },
+    adv/.style={
+      rectangle,minimum width=9mm, minimum height= 7mm, rounded corners=3mm,
+      thick,draw=black,
+      top color=washred,
+      bottom color=fillprimhi,
+      % font=\ttfamily,
+      anchor=center
+    },
+    proc/.style={
+      rectangle,minimum width=9mm, minimum height= 7mm, rounded corners=3mm,
+      thick,draw=drawprim,
+      anchor=center
+    },
+    list/.style={
+      rectangle,minimum width=2mm, minimum height= 7mm, rounded corners=1mm,
+      thick,draw=drawprim,
+      anchor=center
+    },
+    merlist/.style={
+      rectangle,minimum width=3mm, minimum height= 9mm, rounded corners=1mm,
+      thick,draw=drawprim,
+      anchor=center
+    },
+    inout/.style={
+      rectangle,anchor=center
+    },
+    pinout/.style={
+      rectangle, minimum height = 6mm,
+      text height = 5mm, text depth = 2pt,
+      anchor=base
+    },
+    abit/.style={
+      rectangle, anchor=center
+    },
+    ctxt/.style={
+      rectangle, minimum height= 5 mm, rounded corners = 1mm,
+      thick, draw=darkblue,
+      top color = white,
+      bottom color = washblue,
+      anchor=center
+    },
+    fake/.style={
+      rectangle, minimum height= 5 mm, rounded corners = 1mm,
+      thick, draw=darkred,
+      top color = washred,
+      bottom color = white,
+      anchor=center
+    },
+    okfrag/.style={
+      rectangle, minimum height= 9 mm, rounded corners = 3mm,
+      thick, draw=darkgreen,
+      fill opacity = 0.5,
+      top color = washgreen,
+      bottom color = white,
+      anchor=center
+    },
+    badfrag/.style={
+      rectangle, minimum height= 7 mm, rounded corners = 3mm,
+      thick, draw=darkred,
+      fill opacity = 0.5,
+      top color = washred,
+      bottom color = white,
+      anchor=center
+    },
+    minixor/.style={
+      shape = xor sign, minimum size=2mm,
+      thick,inner sep=0pt,anchor=center,draw=drawcol,
+    },
+    minienc/.style={
+      rectangle,minimum width=3mm, minimum height= 3mm,
+      thick,draw=drawprim,
+      top color=fillprimhi,
+      bottom color=fillprimlo,
+      % font=\ttfamily,
+      anchor=center
+    },
+    xor/.style={
+      shape = xor sign, minimum size=4mm,
+      thick,inner sep=0pt,anchor=center,draw=drawcol,
+    },
+    hash/.style={
+      trapezium, minimum size = 15 mm,
+      trapezium left angle=90, trapezium right angle = -60, shape border rotate = 90,
+      thick,draw=drawcol,
+      fill=fillcol
+    },
+    hash1/.style={
+      trapezium, minimum size = 15 mm,
+      trapezium left angle=90, trapezium right angle = -70, shape border rotate = 90,
+      thick,draw=drawcol,
+      fill=fillcol
+    },
+    hash2/.style={
+      trapezium, minimum size = 15 mm,
+      trapezium left angle=90, trapezium right angle = -80, shape border rotate = 90,
+      thick,draw=drawcol,
+      fill=fillcol
+    },
+    chop/.style={
+      trapezium,
+      trapezium left angle=90, trapezium right angle = -70, shape border rotate = 90,
+      thick,draw=drawcol,
+      fill=fillcol
+    },
+    altchop/.style={
+      trapezium,
+      trapezium left angle=90, trapezium right angle = -110, shape border rotate = 90,
+      thick,draw=drawcol,
+      fill=fillcol
+    },
+    tick/.style={
+      strike out,
+      minimum height = 4pt,
+      minimum width = 2pt,
+      inner sep = 0pt,
+      thick, draw=drawcol,
+      -
+    },
+    tn/.style={
+       font = \footnotesize,
+       text = drawcol
+    },
+    skip loop/.style={
+      to path={-- ++(0,#1) -| (\tikztotarget)}
+    },
+    point/.style={coordinate},
+    >=stealth',
+    tip/.style={->,rounded corners},
+    tipsiz/.style={-,rounded corners},
+    stip/.style={->,shorten >=1pt,rounded corners},
+    dstip/.style={->,double,shorten >=1pt,rounded corners},
+    pit/.style={<-,rounded corners},
+    spit/.style={<-,shorten <=1pt,rounded corners},
+    sii/.style={<->,shorten <=1pt,shorten >=1pt,rounded corners},
+    hv path/.style={to path={-| (\tikztotarget)},rounded corners},
+    vh path/.style={to path={|- (\tikztotarget)},rounded corners},
+    label/.style={
+        font = \footnotesize,
+        text = drawcol
+        , postaction={decorate, decoration={markings, mark = at position 4mm with \node #1;}}
+    }
+  }
+\fi
+
+%% MSM: culled down version of Guy's tikz box-commands
+\iffalse
+  \newcommand{\figIO}[1]{|[inout]| \ensuremath{#1}}
+  \newcommand{\figF}{|[func]| \ensuremath{\mathcal{F}_{k_F}}}
+  \newcommand{\figFk}[1]{|[func]| \ensuremath{\mathcal{F}_{#1}}}
+  \newcommand{\figUk}[1]{|[func]| \ensuremath{\mathcal{U}_{#1}}}
+  % \newcommand{\figFk}[1][]{|[func]| \ensuremath{\mathcal{F}_{\if!#1!{k_F}\else{#1}\fi}}}
+  \newcommand{\figFe}{|[func]| \ensuremath{\mathcal{F}_{k}}}
+  \newcommand{\figivE}{|[enc]| \ensuremath{\mathrm{iv}\mathcal{E}_{k_E}}}
+  \newcommand{\figivD}{|[enc]| \ensuremath{\mathrm{iv}\mathcal{D}_{k_E}}}
+  \newcommand{\figE}{|[enc]| \ensuremath{\mathcal{E}_{k_E}}}
+  \newcommand{\figD}{|[enc]| \ensuremath{\mathcal{D}_{k_E}}}
+  \newcommand{\figT}{|[func]| \ensuremath{\mathcal{T}_{k_M}}}
+  \newcommand{\figV}{|[func]| \ensuremath{\mathcal{V}_{k_M}}}
+
+  \newcommand{\figEr}{|[box]| \ensuremath{\mathrm{E}_{k}}}
+  \newcommand{\figXOR}{|[inner sep=0]|\ensuremath{\bigoplus}}
+
+  \newcommand{\figMath}[1]{|[func]| \ensuremath{#1}}
+
+  \newcommand*{\StrikeThruDistance}{0.15cm}%
+  \newcommand{\diagramgap}{1mm}
+  \newcommand{\boxheight}{.5cm}
+  \newcommand{\dstep}{1}
+  \newcommand{\rstep}{1}
+\fi
