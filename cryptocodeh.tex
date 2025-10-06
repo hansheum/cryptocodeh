@@ -41,7 +41,7 @@
     \newcommand{\pcand}{\highlightkeyword{and}}
     \newcommand{\pcwith}{\highlightkeyword{with}}
     \newcommand{\pclet}{\highlightkeyword{let}}
-    % ?
+    \newcommand{\pcrequire}{\highlightkeyword{require}}
     \providecommand{\halt}{\ensuremath{\event{halt}}}
 
     %% 2.1 Security Parameter
@@ -275,6 +275,7 @@
     %% 2.13 Events
     %%
     %%   Loaded as is
+    \newcommand{\guess}{\event{guess}}
 
 
     %% 2.16 Keys (+IO)
@@ -486,10 +487,11 @@
 
     % public key encryption
     \newcommand{\pkescheme}{\pcschemestyle{PKE}}
-    \newcommand{\pkpm}{\pcalgostyle{PKE.Pm}} % H
-    \newcommand{\pkkg}{\pcalgostyle{PKE.Kg}} % H: Changed from Pk. to PKE.
+    \newcommand{\pkpm}{\pcalgostyle{PKE.Pm}}
+    \newcommand{\pkkg}{\pcalgostyle{PKE.Kg}} % Changed from Pk. to PKE.
     \newcommand{\pkenc}{\pcalgostyle{PKE.Enc}} 
     \newcommand{\pkdec}{\pcalgostyle{PKE.Dec}}
+    \newcommand{\pkrnd}{\pcalgostyle{PKE.Rnd}}
 
     \newcommand{\tdpscheme}{\pcschemestyle{TDP}}
     \newcommand{\RSAscheme}{\pcschemestyle{RSA}}
