@@ -42,7 +42,6 @@
     \newcommand{\pcwith}{\highlightkeyword{with}}
     \newcommand{\pclet}{\highlightkeyword{let}}
     \newcommand{\pcrequire}{\highlightkeyword{require}}
-    \newcommand{\pccontinue}{\highlightkeyword{continue}}
     \providecommand{\halt}{\ensuremath{\event{halt}}}
 
     %% 2.1 Security Parameter
@@ -512,10 +511,13 @@
 
     % signatures and mac
     \newcommand{\macscheme}{\pcschemestyle{Mac}}
-    \newcommand{\sigscheme}{\pcschemestyle{SIG}}
-    \newcommand{\sigsig}{\pcalgostyle{SIG.Sig}}
-    \newcommand{\sigver}{\pcalgostyle{SIG.Vfy}}
     \newcommand{\mac}{\pcalgostyle{Mac}}
+    \newcommand{\sgnscheme}{\pcschemestyle{SGN}}
+    \newcommand{\sgnpm}{\pcalgostyle{SGN.Pm}}
+    \newcommand{\sgnkg}{\pcalgostyle{SGN.Kg}}
+    \newcommand{\sgnsign}{\pcalgostyle{SGN.Sig}}
+    \newcommand{\sgnver}{\pcalgostyle{SGN.Vfy}}
+    \newcommand{\sig}{\pcvarstyle{\sigma}}
 
     % PRF, PRG, PRP
     \providecommand{\prf}{\pcalgostyle{PRF}}
