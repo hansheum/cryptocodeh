@@ -216,8 +216,8 @@
       \newcommand{\owstar}{\pcnotionstyle{weak\pcmathhyphen{}OW\pcmathhyphen{}CCA}}
       \newcommand{\cticpa}{\pcnotionstyle{CTI\pcmathhyphen{}CPA}}
 
-      % \newcommand{\seufcma}{\pcnotionstyle{(s)EUF\pcmathhyphen{}CMA}}
       % \newcommand{\eufcma}{\pcnotionstyle{EUF\pcmathhyphen{}CMA}}
+      \renewcommand{\seufcma}{\pcnotionstyle{sEUF\pcmathhyphen{}CMA}}
       \newcommand{\uufcma}{\pcnotionstyle{UUF\pcmathhyphen{}CMA}}
       \newcommand{\eufpas}{\pcnotionstyle{EUF\pcmathhyphen{}PAS}}
       \newcommand{\uufpas}{\pcnotionstyle{UUF\pcmathhyphen{}PAS}}
@@ -244,6 +244,7 @@
       \newcommand{\Orec}{\pcoraclestyle{R}}
       \newcommand{\Otran}{\pcoraclestyle{T}}
       \newcommand{\Ocheck}{\pcoraclestyle{P}}
+      \newcommand{\Osign}{\pcoraclestyle{S}}
 
       % H: Random oracles. Usage: \RO = H, \RO[G] = G, etc.
       \newcommand{\RO}[1][H]{\mathsf{#1}}
@@ -339,9 +340,7 @@
       \newcommand{\advnonce}{\pcvarstyle{\hat{n}}}
       \newcommand{\advctxt}{\pcvarstyle{\hat{c}}}
       \newcommand{\advtag}{\pcvarstyle{\hat{t}}}
-      \newcommand{\advatag}{\pcvarstyle{\hat{t}}}
-      \newcommand{\advsig}{\pcvarstyle{\hat{s}}}
-      \newcommand{\advasig}{\pcvarstyle{\hat{s}}}
+      \newcommand{\advsig}{\pcvarstyle{\hat{\sigma}}}
 
       \newcommand{\chalbit}{\pcaltvarstyle{b^{*}}}
       \newcommand{\chalkey}{\pcvarstyle{K^{*}}}
