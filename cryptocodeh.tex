@@ -8,6 +8,12 @@
 
   \usepackage[lambda,operators,adversary,landau,probability,sets,notions,logic,events,keys,mm,asymptotics]{cryptocode}
 
+    %% H: Multi-line boxed pseudocode
+    \newcommand{\pcmultibox}[2][]{%
+      {\setlength{\fboxsep}{3pt}\fbox{\begin{varwidth}{\linewidth}\strut$#2$\end{varwidth}}}%
+      \if\relax\detokenize{#1}\relax\else\pccomment{#1}\fi%
+    }
+
     %% H: Basic notation
     \newcommand{\hy}{\ensuremath{\pcmathhyphen{}}}
     \newcommand{\setapp}{\overset{\cup}{\longleftarrow}}
