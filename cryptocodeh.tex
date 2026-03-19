@@ -53,6 +53,33 @@
     \newcommand{\pcrequire}{\highlightkeyword{require}}
     \providecommand{\halt}{\ensuremath{\event{halt}}}
 
+    %% H: Quantum pseudocode
+    \newcommand{\unitary}[1][U]{\ensuremath{#1}}
+    \newcommand{\register}[1][R]{\ensuremath{\bm{\mathsf{#1}}}}
+    \newcommand{\emptyreg}{\emptyset}
+  
+    \newcommand{\inReg}{\register[X]}
+    \newcommand{\outReg}{\register[Y]}
+    \newcommand{\bitReg}{\register[B]}
+    \newcommand{\ancReg}{\register[A]}
+    \newcommand{\ctrl}[2]{\mathsf{C} \left(#1\, :\, #2 \right)}
+  
+    \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
+    \newcommand{\pcsmalloplus}{\mathrel{\mathpalette\pcsmallopluskern\relax}}
+    \newcommand{\pcsmallopluskern}[2]{%
+      \vcenter{\hbox{$#1\scriptstyle\oplus$}}%
+    }
+  
+    \newcommand{\zstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallominus}
+    \newcommand{\pcsmallominus}{\mathrel{\mathpalette\pcsmallominuskern\relax}}
+    \newcommand{\pcsmallominuskern}[2]{%
+      \vcenter{\hbox{$#1\scriptstyle\ominus$}}%
+    }
+  
+    \newcommand{\initreg}{\gets}
+    \newcommand{\swapreg}{\xleftrightarrow{}}
+    \newcommand{\permute}{\, \cdots\, }
+
     %% 2.1 Security Parameter
     %%
     %% Not loaded; note n will be block size, so if needed, use lambda option of cryptocode
