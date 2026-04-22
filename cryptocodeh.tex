@@ -75,9 +75,16 @@
       \vcenter{\hbox{$#1\scriptstyle\ominus$}}%
     }
   
+    \newcommand{\dotstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallodot}
+    \newcommand{\pcsmallodot}{\mathrel{\mathpalette\pcsmallodotkern\relax}}
+    \newcommand{\pcsmallodotkern}[2]{%
+      \vcenter{\hbox{$#1\scriptstyle\odot$}}%
+    }
+
     \newcommand{\initreg}{\gets}
     \newcommand{\swapreg}{\xleftrightarrow{}}
     \newcommand{\permute}{\, \cdots\, }
+
 
     %% 2.1 Security Parameter
     %%
@@ -286,6 +293,9 @@
       \newcommand{\RO}[1][H]{\pcoraclestyle{#1}}
       \newcommand{\GO}{\RO[G]}
       
+      %% H: Quantum Oracles
+      \newcommand{\quantum}[1]{\bm{\mathcal{#1}}}
+      \newcommand{\qRO}[1][H]{\quantum{\RO[#1]}}
 
       % H: hopping games
       \newcommandx*{\game}[3][2={},3={},usedefault=@]{\ensuremath{\mathrm{G}^{#2}_{#1}\cb{#3}}}
