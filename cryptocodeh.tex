@@ -12,10 +12,13 @@
   \renewcommand{\pcalgostyle}[1]{{\ensuremath{    \mathsf{#1}}}}
   \renewcommand{\pcoraclestyle}[1]{{\ensuremath{  \mathcal{#1}}}}
   \renewcommand{\pcsetstyle}[1]{{\ensuremath{     \mathcal{#1}}}}
-    \newcommand{\pclenstyle}[1]{{\ensuremath{     \mathsf{#1}}}}
-    \newcommand{\pcschemestyle}[1]{{\ensuremath{  \mathsc{#1}}}}
-    \newcommand{\pcliststyle}[1]{{\ensuremath{    \mathsf{#1}}}}
-    \newcommand{\pcfunctionstyle}[1]{{\ensuremath{\mathrm{#1}}}}
+  % Newer LaTeX Fix: MakeUppercase not working for Cryptocode[x]
+  \renewcommand{\pcnotionstyle}[1]{{\ensuremath{\mathchoice%
+    {\mathrm{#1}}{\mathrm{#1}}{\mathrm{\lowercase{#1}}}{\mathrm{\lowercase{#1}}}}}}
+  \newcommand{\pclenstyle}[1]{{\ensuremath{     \mathsf{#1}}}}
+  \newcommand{\pcschemestyle}[1]{{\ensuremath{  \mathsc{#1}}}}
+  \newcommand{\pcliststyle}[1]{{\ensuremath{    \mathsf{#1}}}}
+  \newcommand{\pcfunctionstyle}[1]{{\ensuremath{\mathrm{#1}}}}
 
 
   %% Multi-line boxed pseudocode
@@ -184,9 +187,6 @@
           \ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\cb{#3}}
         }
 
-        % Newer LaTeX Fix: MakeUppercase not working for Cryptocode[x]
-        \renewcommand{\pcnotionstyle}[1]{{\ensuremath{\mathchoice%
-          {\mathrm{#1}}{\mathrm{#1}}{\mathrm{\lowercase{#1}}}{\mathrm{\lowercase{#1}}}}}}
 
 
   %% 2.3 Math Operators
@@ -263,6 +263,9 @@
     % \mathchardef\pcmathhyphen ="2D
     % \renewcommand{\pcnotionstyle}[1]{\ensuremath{\mathrm{#1}}}
 
+    \renewcommand{\indcpa}{\pcnotionstyle{IND\pcmathhyphen{}CPA}\xspace} % just to add xspace
+    \renewcommand{\indcca}{\pcnotionstyle{IND\pcmathhyphen{}CCA}\xspace}
+
     \newcommand{\krpas}{\pcnotionstyle{KR\pcmathhyphen{}PAS}\xspace}
     \newcommand{\krotkca}{\pcnotionstyle{KR\pcmathhyphen{}1KCA}\xspace}
     \newcommand{\krotkpa}{\pcnotionstyle{KR\pcmathhyphen{}1KPA}\xspace}
@@ -271,7 +274,7 @@
     \newcommand{\krcpa}{\pcnotionstyle{KR\pcmathhyphen{}CPA}\xspace}
     \newcommand{\krcca}{\pcnotionstyle{KR\pcmathhyphen{}CCA}\xspace}
 
-    \newcommand{\ku}{\pcnotionstyle{KU}\xspace} % Key *Unrecoverability*
+    \newcommand{\ku}{\pcnotionstyle{KU}\xspace} % Key *Unrecoverability* (KUR?)
     \newcommand{\ror}{\pcnotionstyle{ROR}\xspace}
 
     \newcommand{\kpa}{\pcnotionstyle{KPA}\xspace}
