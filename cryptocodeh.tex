@@ -1,463 +1,461 @@
-% Hans's stolen version of Martijn's cryptocode addendum (redux?)
-\usepackage{amsmath,amsfonts,amssymb,bbm,stmaryrd,marvosym,braket}
-\usepackage{xspace}
-\usepackage{dsfont} % Use \mathds{} for mathbb-style integers
+% Hans's stolen version of Martijn's cryptocode addendum (cryptocodex -- redux?)
+\usepackage{amsmath,amsfonts,amssymb,bbm,stmaryrd,marvosym,braket,xspace}
+\usepackage{dsfont} % Use \mathds{} for mathbb-style integers (identity matrix etc.)
 \usepackage{bm} % for more bold things including mathcal
+\usepackage[lambda,operators,adversary,landau,probability,sets,notions,logic,events,keys,mm,asymptotics]{cryptocode}
 
   \DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
   \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
 
-  \usepackage[lambda,operators,adversary,landau,probability,sets,notions,logic,events,keys,mm,asymptotics]{cryptocode}
+  %% H: Multi-line boxed pseudocode
+  \newcommand{\pcmultibox}[2][]{%
+    {\setlength{\fboxsep}{3pt}\fbox{\begin{varwidth}{\linewidth}\strut$#2$\end{varwidth}}}%
+    \if\relax\detokenize{#1}\relax\else\pccomment{#1}\fi%
+  }
 
-    %% H: Multi-line boxed pseudocode
-    \newcommand{\pcmultibox}[2][]{%
-      {\setlength{\fboxsep}{3pt}\fbox{\begin{varwidth}{\linewidth}\strut$#2$\end{varwidth}}}%
-      \if\relax\detokenize{#1}\relax\else\pccomment{#1}\fi%
-    }
+  %% H: Basic notation
+  \newcommand{\sth}{\textsf{ s.t. }}
+  \newcommand{\hy}{\ensuremath{\pcmathhyphen{}}}
+  \newcommand{\setapp}{\overset{\cup}{\longleftarrow}}
+  %\newcommand{\listapp}{\overset{\frown}{\longleftarrow}} % used in my PhD papers
+  \newcommand{\listapp}{\twoheadleftarrow}
+  \newcommand{\elms}[1]{\ensuremath{\llbracket #1 \rrbracket}} % overload with predicate notation
+  \providecommand{\listsample}{\hskip2.3pt{\listapp\!\!\mbox{\scriptsize${\$}$\normalsize}}\,}
+  \newcommand{\half}{\nicefrac{1}{2}}
+  \newcommand{\notsim}[2]{\abs{#1} \neq \abs{#2}}
+  \newcommand{\condlist}[2]{#1_{|#2}}
+  \newcommand{\done}{\ensuremath{\checkmark}}
+  % Nicer inequalities
+  \renewcommand{\leq}{\ensuremath{\leqslant}}
+  \renewcommand{\geq}{\ensuremath{\geqslant}}
+  \newcommand{\bigOtilde}[1]{\ensuremath{\widetilde{\mathcal O}\mathopen{}\left(#1\right)\mathclose{}}}
+  \newcommand{\bigOmegatilde}[1]{\ensuremath{\widetilde{\Omega}\mathopen{}\left(#1\right)\mathclose{}}}
+  \newcommand{\bigThetatilde}[1]{\ensuremath{\widetilde{\Theta}\mathopen{}\left(#1\right)\mathclose{}}}
 
-    %% H: Basic notation
-    \newcommand{\sth}{\textsf{ s.t. }}
-    \newcommand{\hy}{\ensuremath{\pcmathhyphen{}}}
-    \newcommand{\setapp}{\overset{\cup}{\longleftarrow}}
-    %\newcommand{\listapp}{\overset{\frown}{\longleftarrow}}
-    \newcommand{\listapp}{\twoheadleftarrow}
-    \newcommand{\elms}[1]{\ensuremath{\llbracket #1 \rrbracket}}
-    \providecommand{\listsample}{\hskip2.3pt{\listapp\!\!\mbox{\scriptsize${\$}$\normalsize}}\,}
-    \newcommand{\half}{\nicefrac{1}{2}}
-    \newcommand{\notsim}[2]{\abs{#1} \neq \abs{#2}}
-    \newcommand{\condlist}[2]{#1_{|#2}}
-    \newcommand{\done}{\ensuremath{\checkmark}}
-    % Nicer inequalities
-    \renewcommand{\leq}{\ensuremath{\leqslant}}
-    \renewcommand{\geq}{\ensuremath{\geqslant}}
-    \newcommand{\bigOtilde}[1]{\ensuremath{\widetilde{\mathcal O}\mathopen{}\left(#1\right)\mathclose{}}}
-    \newcommand{\bigOmegatilde}[1]{\ensuremath{\widetilde{\Omega}\mathopen{}\left(#1\right)\mathclose{}}}
-    \newcommand{\bigThetatilde}[1]{\ensuremath{\widetilde{\Theta}\mathopen{}\left(#1\right)\mathclose{}}}
+  % Colors
+  \newcommand{\red}[1]{\textcolor{red}{#1}}
+  \newcommand{\blue}[1]{\textcolor{blue}{#1}}
+  \newcommand{\green}[1]{\textcolor{ForestGreen}{#1}}
 
-    % Colors
-    \newcommand{\red}[1]{\textcolor{red}{#1}}
-    \newcommand{\blue}[1]{\textcolor{blue}{#1}}
-    \newcommand{\green}[1]{\textcolor{ForestGreen}{#1}}
+  %% H: Matrices, etc.
+  % The extra ``[]'' gives the standard value for #1, making it optional
+  % n x n version
+  %\newcommand{\idmatrix}[1][]{\if!#1!{\ensuremath{\mathds{1}}}\else{\ensuremath{\mathds{1}_{#1 \times #1}}}\fi}
+  % square version
+  \newcommand{\idmatrix}[1][]{\if!#1!{\ensuremath{\mathds{1}}}\else{\ensuremath{\mathds{1}_{#1}}}\fi}
 
-    %% H: Matrices, etc.
-    % The extra ``[]'' gives the standard value for #1, making it optional
-    % n x n version
-    %\newcommand{\idmatrix}[1][]{\if!#1!{\ensuremath{\mathds{1}}}\else{\ensuremath{\mathds{1}_{#1 \times #1}}}\fi}
-    % square version
-    \newcommand{\idmatrix}[1][]{\if!#1!{\ensuremath{\mathds{1}}}\else{\ensuremath{\mathds{1}_{#1}}}\fi}
+  %% H: machine code
+  \renewcommand{\pcthen}{\ensuremath{:\ }}
+  \renewcommand{\pcdo}{\ensuremath{:\ }}
+  \newcommand{\pcoutput}{\highlightkeyword{output}}
+  \newcommand{\pchalt}{\highlightkeyword{halt}}
+  \newcommand{\pcand}{\highlightkeyword{and}}
+  \newcommand{\pcwith}{\highlightkeyword{with}}
+  \newcommand{\pclet}{\highlightkeyword{let}}
+  \newcommand{\pcrequire}{\highlightkeyword{require}}
+  \providecommand{\halt}{\ensuremath{\event{halt}}}
 
-    %% H: machine code
-    \renewcommand{\pcthen}{\ensuremath{:\ }}
-    \renewcommand{\pcdo}{\ensuremath{:\ }}
-    \newcommand{\pcoutput}{\highlightkeyword{output}}
-    \newcommand{\pchalt}{\highlightkeyword{halt}}
-    \newcommand{\pcand}{\highlightkeyword{and}}
-    \newcommand{\pcwith}{\highlightkeyword{with}}
-    \newcommand{\pclet}{\highlightkeyword{let}}
-    \newcommand{\pcrequire}{\highlightkeyword{require}}
-    \providecommand{\halt}{\ensuremath{\event{halt}}}
-
-    %% H: Quantum pseudocode
-    \newcommand{\unitary}[1][U]{\ensuremath{#1}}
-    \newcommand{\register}[1][R]{\ensuremath{\bm{\mathsf{#1}}}}
-    \newcommand{\emptyreg}{\emptyset}
-    \newcommand{\pcbranch}{\highlightkeyword{branch}}
-    \newcommand{\pcof}{\, \highlightkeyword{of}}
+  %% H: Quantum pseudocode
+  \newcommand{\unitary}[1][U]{\ensuremath{#1}}
+  \newcommand{\register}[1][R]{\ensuremath{\bm{\mathsf{#1}}}}
+  \newcommand{\emptyreg}{\emptyset}
+  \newcommand{\pcbranch}{\highlightkeyword{branch}}
+  \newcommand{\pcof}{\, \highlightkeyword{of}}
   
-    \newcommand{\inReg}{\register[X]}
-    \newcommand{\outReg}{\register[Y]}
-    \newcommand{\bitReg}{\register[B]}
-    \newcommand{\ancReg}{\register[A]}
-    \newcommand{\ctrl}[2]{\mathsf{C} \left(#1\, :\, #2 \right)}
+  \newcommand{\inReg}{\register[X]}
+  \newcommand{\outReg}{\register[Y]}
+  \newcommand{\bitReg}{\register[B]}
+  \newcommand{\ancReg}{\register[A]}
+  \newcommand{\ctrl}[2]{\mathsf{C} \left(#1\, :\, #2 \right)}
   
-    \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
-    \newcommand{\pcsmalloplus}{\mathrel{\mathpalette\pcsmallopluskern\relax}}
-    \newcommand{\pcsmallopluskern}[2]{%
-      \vcenter{\hbox{$#1\scriptstyle\oplus$}}%
-    }
+  \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
+  \newcommand{\pcsmalloplus}{\mathrel{\mathpalette\pcsmallopluskern\relax}}
+  \newcommand{\pcsmallopluskern}[2]{%
+    \vcenter{\hbox{$#1\scriptstyle\oplus$}}%
+  }
   
-    \newcommand{\zstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallominus}
-    \newcommand{\pcsmallominus}{\mathrel{\mathpalette\pcsmallominuskern\relax}}
-    \newcommand{\pcsmallominuskern}[2]{%
-      \vcenter{\hbox{$#1\scriptstyle\ominus$}}%
-    }
+  \newcommand{\zstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallominus}
+  \newcommand{\pcsmallominus}{\mathrel{\mathpalette\pcsmallominuskern\relax}}
+  \newcommand{\pcsmallominuskern}[2]{%
+    \vcenter{\hbox{$#1\scriptstyle\ominus$}}%
+  }
   
-    \newcommand{\dotstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallodot}
-    \newcommand{\pcsmallodot}{\mathrel{\mathpalette\pcsmallodotkern\relax}}
-    \newcommand{\pcsmallodotkern}[2]{%
-      \vcenter{\hbox{$#1\scriptstyle\odot$}}%
-    }
-
-    % Right-facing lateral eye (TikZ drawing, scaled)
-    % \observeeye[scale] — raw glyph, used by \observe and \obstore
-      \newcommand{\observeeye}[1][0.12]{\scalebox{-#1}[#1]{%
-        \tikzset{every picture/.style={line width=0.75pt}}%
-        \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-          \draw [line width=4] (300,100.33) .. controls (326,122) and (352,135) .. (378,139.33)
-            .. controls (352,143.67) and (326,156.67) .. (300,178.33);
-          \draw [fill=black,fill opacity=1] (308.94,116.33) .. controls (313.87,116.33) and (317.86,125.51) .. (317.85,136.83)
-            .. controls (317.84,148.15) and (313.84,157.33) .. (308.91,157.33)
-            .. controls (303.99,157.32) and (300,148.14) .. (300.01,136.82)
-            .. controls (300.02,125.5) and (304.02,116.32) .. (308.94,116.33) -- cycle;
-          \draw [draw opacity=0,line width=4] (314.84,166.6) .. controls (311.87,164.64) and (309.14,162.18) .. (306.76,159.24)
-            .. controls (295.12,144.82) and (296.6,124.33) .. (310.07,113.45)
-            .. controls (311.48,112.32) and (312.96,111.33) .. (314.5,110.49) -- (331.14,139.55) -- cycle;
-          \draw [line width=4] (314.84,166.6) .. controls (311.87,164.64) and (309.14,162.18) .. (306.76,159.24)
-            .. controls (295.12,144.82) and (296.6,124.33) .. (310.07,113.45)
-            .. controls (311.48,112.32) and (312.96,111.33) .. (314.5,110.49);
-          \draw [fill=white,fill opacity=1] (304.43,124.2) .. controls (306.09,124.25) and (307.32,128.01) .. (307.18,132.6)
-            .. controls (307.05,137.19) and (305.59,140.88) .. (303.93,140.83)
-            .. controls (302.27,140.78) and (301.03,137.02) .. (301.17,132.43)
-            .. controls (301.31,127.83) and (302.76,124.15) .. (304.43,124.2) -- cycle;
-        \end{tikzpicture}%
-      }}
-    
-    % Observe register: $\observe \register[B]$
-      \newcommand{\observe}{\mathrel{\raisebox{-0.6pt}{\observeeye}}\,}
-    
-    % Observe-and-store: $x \obstore \register[X]$
-      \newcommand{\obstore}{\leftarrow\mathrel{\mkern-2.0mu}\mathrel{\vcenter{\hbox{\observeeye[0.1]}}}\, }
-
-    \newcommand{\initreg}{\gets}
-    \newcommand{\swapreg}{\xleftrightarrow{}}
-    \newcommand{\permute}{\, \cdots\, }
-
-
-    %% 2.1 Security Parameter
-    %%
-    %% Not loaded; note n will be block size, so if needed, use lambda option of cryptocode
-
-
-    %% 2.2 Advantage Terms
-    %%
-    %%   Not loaded; instead the commands are reproduced below, but with the default optional
-    %%   argument changed to the relevant adversary.
-    %%
-    %%   Additionally, similar commands for experiments is provided. The distexperiment has
-    %%   four arguments, by adding an optional first one to indicate the `version'
-    %%   of the experiment (default b) in case of two-experiment distinguishing games.
-
-      \newcommand{\pcadvantagesuperstyle}[1]{\mathrm{\MakeLowercase{#1}}}
-      \newcommand{\pcadvantagesubstyle}[1]{#1}
-      \newcommandx*{\advantage}[3][3=(\adv)]{\ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
-        %% Example usage: \advantage{\indcpa}{\pkescheme}[\bdv]
-
-      \newcommand{\sdash}{\mbox{-}}
-      \newcommandx*{\experiment}[3][3=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
-        %% Example usage: \experiment{\indcpa}{\pkescheme}[\bdv]
-      \newcommandx*{\distexperiment}[4][1=b, 4=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{{#2}\sdash{#1}}}_{\pcadvantagesubstyle{#3}}#4}}
-
-      % H: More flexible commands from the SOA project, as set up by Carlo
-      %MSM: commands below might create a discrepancy with cryptocodex Exp and Adv
-        % Security Games constructor macro
-          % H: Having a hard time understanding what these three do ... ask Carlo
-          \newcommand{\cb}[1]{\ifthenelse{\equal{#1}{}}{}{(#1)}}
-          \newcommandx*{\cbr}[2][2={},usedefault=@]{\ifthenelse{\equal{#1}{} }{}{#1#2}}
-          \newcommandx*{\cbl}[2][2={},usedefault=@]{\ifthenelse{\equal{#1}{} }{}{#2#1}}
-
-          \usepackage{xparse}
-
-          \NewDocumentCommand{\sg}{ommo} {%
-            \ensuremath{%
-              \IfValueTF{#1} {\cbr{#1}[\hy]} {}
-              \pcnotionstyle{#2}
-              \cbl{#3}[\hy]
-              \IfValueTF{#4} {\cbl{#4}[]} {}
-            }%
-          }
-
-          \NewDocumentCommand{\advg}{m D<>{\pkescheme[\secpar]} D(){\Eve{}}}{
-            \ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\cb{#3}}
-          }
-          % Example usage: \advg{\indcca}<\pkescheme>(\adv) ... right?
-
-          \NewDocumentCommand{\expg}{m D<>{\pkescheme[\secpar]} D(){\Eve{}}}{
-            \ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\cb{#3}}
-          }
-
-          % Newer LaTeX Fix: MakeUppercase not working for Cryptocode[x]
-          \renewcommand{\pcnotionstyle}[1]{{\ensuremath{\mathchoice%
-            {\mathrm{#1}}{\mathrm{#1}}{\mathrm{\lowercase{#1}}}{\mathrm{\lowercase{#1}}}}}}
-
-
-    %% 2.3 Math Operators
-    %%
-    %%   Loaded as is, with some additional commands as follows...
-
-      \newcommand{\nope}{\ensuremath{\lightning}}
-      \newcommand{\fail}{\text{\Lightning}} % H; MSM: cryptocodex should have \nope instead
-      \newcommand{\reject}{\ensuremath{\perp}}
-      \newcommand{\mightequal}{\overset?=}
-      \newcommand{\nimplies}{%
-        \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
-      % \newcommand{\plusplus}[1]{{#1}\!+\!+}
-      \newcommand{\getsr}{\sample}
-
-      \newcommand{\eulerphi}{\varphi}
-      \renewcommand{\RR}{\ensuremath{\mathbb{R}}}
-      \renewcommand{\NN}{\ensuremath{\mathbb{N}}}
-      \renewcommand{\CC}{\ensuremath{\mathbb{C}}}
-      \renewcommand{\ZZ}[1][]{{\if!#1!{\ensuremath{\mathbb{Z}}}\else{\ensuremath{\mathbb{Z}_{#1}}}\fi}}%
-      \newcommand{\ZZs}[1][]{{\if!#1!{\ensuremath{\mathbb{Z}^{*}}}\else{\ensuremath{\mathbb{Z}^{*}_{#1}}}\fi}}%
-      \newcommand{\Gq}[1][]{{\if!#1!{\ensuremath{\mathsf{G}_q}}\else{\ensuremath{\mathsf{G}_{#1}}}\fi}}%
-
-      \newcommand{\pcsth}{\highlightkeyword{\ s.th.}}
-
-    %% 2.4 Adversaries
-    %%
-    %%   Loaded, with display changed a la Rogaway (mathbb)
-    %%   \Eve and \Red are there for compatibility purposes
-
-      \renewcommand{\pcadvstyle}[1]{\mathbbm{#1}}
-      \newcommand{\pcadvsubstyle}[1]{\mathrm{\MakeLowercase{#1}}}
-
-      % H: Some simplistic actors
-      %\newcommand{\adversary}{\adv} % already defined 
-      \newcommand{\reduction}{\bdv}
-      \newcommand{\distinguisher}{\ddv}
-      \newcommand{\extractor}{\edv}
-
-      % To-do: make standard value empty (why bugged? probably need an ifelse)
-      \newcommand{\Eve}[1]{\adv_{\pcadvsubstyle{#1}}}
-      \newcommand{\Red}[1]{\bdv_{\pcadvsubstyle{#1}}}
-      \newcommand{\Dis}[1]{\ddv_{\pcadvsubstyle{#1}}}
-      \newcommand{\Ext}[1]{\edv_{\pcadvsubstyle{#1}}}
-
-
-    %% 2.5 Landau
-    %%
-    %%   Loaded as is
-
-    %% 2.6 Probabilities
-    %%
-    %%   probability option of cryptocode already provides
-    %%   \prob{}, \probsub{}, \condprob{}, \condprobsub
-    %%   and then some for expectation, support, and entropy
-    %%
-    %%   Below are added for more involved sampling related probabilities
-
-      %\renewcommand{\probname}{Pr}
-      \newcommand{\probsample}[2]{\prob{#1\,:\,#2}}
-    	\newcommand{\condprobsample}[3]{\ensuremath{\probsample{#1}{#2\,\left|\,#3\vphantom{#1}\right.}}}
-
-
-
-    %% 2.7 Sets
-    %%
-    \newcommand{\card}[1]{\left|#1\right|}
-
-
-    %% 2.8 Crypto Notions
-    %%
-    %%   Loaded, some additional notaions provided below
-
-      % Keep option open of changing typesetting, incl. the hyphen
-      % \mathchardef\pcmathhyphen ="2D
-      % \renewcommand{\pcnotionstyle}[1]{\ensuremath{\mathrm{#1}}}
-
-      \newcommand{\krpas}{\pcnotionstyle{KR\pcmathhyphen{}PAS}\xspace}
-      \newcommand{\krotkca}{\pcnotionstyle{KR\pcmathhyphen{}1KCA}\xspace}
-      \newcommand{\krotkpa}{\pcnotionstyle{KR\pcmathhyphen{}1KPA}\xspace}
-      \newcommand{\krotcpa}{\pcnotionstyle{KR\pcmathhyphen{}1CPA}\xspace}
-      \newcommand{\krkpa}{\pcnotionstyle{KR\pcmathhyphen{}KPA}\xspace}
-      \newcommand{\krcpa}{\pcnotionstyle{KR\pcmathhyphen{}CPA}\xspace}
-      \newcommand{\krcca}{\pcnotionstyle{KR\pcmathhyphen{}CCA}\xspace}
-
-      \newcommand{\ku}{\pcnotionstyle{KU}\xspace} % Key *Unrecoverability*
-      \newcommand{\ror}{\pcnotionstyle{ROR}\xspace}
-
-      \newcommand{\kpa}{\pcnotionstyle{KPA}\xspace}
-      \newcommand{\cpa}{\pcnotionstyle{CPA}\xspace}
-      \newcommand{\cca}{\pcnotionstyle{CCA}\xspace}
-      \newcommand{\pca}{\pcnotionstyle{PCA}\xspace}
-
-      \newcommand{\otind}{\pcnotionstyle{1IND}\xspace}
-      \newcommand{\otlor}{\pcnotionstyle{1LOR}\xspace}
-
-      \newcommand{\prfind}{\pcnotionstyle{IND}\xspace}
-      \newcommand{\nind}{\pcnotionstyle{(N)IND}\xspace}
-      \newcommand{\ivind}{\pcnotionstyle{(IV)IND}\xspace}
-
-      \newcommand{\nindcca}{\pcnotionstyle{(N)IND\pcmathhyphen{}CCA}\xspace}
-
-      \newcommand{\lorcpa}{\pcnotionstyle{LOR\pcmathhyphen{}CPA}\xspace}
-      \newcommand{\lorcca}{\pcnotionstyle{LOR\pcmathhyphen{}CCA}\xspace}
-
-      \newcommand{\prp}{\pcnotionstyle{PRP}\xspace}
-      \newcommand{\sprp}{\pcnotionstyle{SPRP}\xspace}
-
-      \renewcommand{\ae}{\pcnotionstyle{AE}\xspace}  % Warning: This overrides the \ae ligature command!
-      \newcommand{\owot}{\pcnotionstyle{OW\pcmathhyphen{}PAS}\xspace}
-      \newcommand{\owcpa}{\pcnotionstyle{OW\pcmathhyphen{}CPA}\xspace}
-      \newcommand{\owcca}{\pcnotionstyle{OW\pcmathhyphen{}CCA}\xspace}
-      \newcommand{\owpca}{\pcnotionstyle{OW\pcmathhyphen{}PCA}\xspace} % H
-      \newcommand{\qpca}{\pcnotionstyle{qPCA}\xspace} % H
-      \newcommand{\owqpca}{\pcnotionstyle{OW\pcmathhyphen{}qPCA}\xspace} % H
-      \newcommand{\owstar}{\pcnotionstyle{weak\pcmathhyphen{}OW\pcmathhyphen{}CCA}\xspace}
-      \newcommand{\cticpa}{\pcnotionstyle{CTI\pcmathhyphen{}CPA}\xspace}
-
-      % \newcommand{\eufcma}{\pcnotionstyle{EUF\pcmathhyphen{}CMA}}
-      \renewcommand{\seufcma}{\pcnotionstyle{sEUF\pcmathhyphen{}CMA}\xspace}
-      \newcommand{\uufcma}{\pcnotionstyle{UUF\pcmathhyphen{}CMA}\xspace}
-      \newcommand{\eufpas}{\pcnotionstyle{EUF\pcmathhyphen{}PAS}\xspace}
-      \newcommand{\uufpas}{\pcnotionstyle{UUF\pcmathhyphen{}PAS}\xspace}
-
-      \newcommand{\coll}{\pcnotionstyle{COLL}\xspace}
-      \newcommand{\dpre}{\pcnotionstyle{PRE}\xspace}
-      \newcommand{\spre}{\pcnotionstyle{SEC}\xspace}
-
-      \newcommand{\factor}{\pcnotionstyle{FACTOR}\xspace}
-      \newcommand{\rsa}{\pcnotionstyle{RSA}\xspace}
-      \newcommand{\dlp}{\pcnotionstyle{DLP}\xspace}
-      \newcommand{\cdh}{\pcnotionstyle{CDH}\xspace}
-      \newcommand{\ddh}{\pcnotionstyle{DDH}\xspace}
-
-      % H: notion parameters
-      \newcommand{\keys}{\kappa}
-      \newcommand{\bits}{\beta}
-
-      % H: additional game oracles
-      \newcommand{\Oracle}{\pcoraclestyle{O}\xspace}
-      \newcommand{\Okg}{\pcoraclestyle{G}\xspace}
-      \newcommand{\Ochal}{\pcoraclestyle{C}\xspace}
-      \newcommand{\Osend}{\pcoraclestyle{S}\xspace}
-      \newcommand{\Orec}{\pcoraclestyle{R}\xspace}
-      \newcommand{\Otran}{\pcoraclestyle{T}\xspace}
-      \newcommand{\Ocheck}{\pcoraclestyle{P}\xspace}
-      \newcommand{\Osign}{\pcoraclestyle{S}\xspace}
-
-      % H: Random oracles. Usage: \RO = H, \RO[G] = G, etc.
-      \newcommand{\RO}[1][H]{\pcoraclestyle{#1}\xspace}
-      \newcommand{\GO}{\RO[G]}
-
-      %% H: Quantum Oracles
-      \newcommand{\quantum}[1]{\bm{\mathcal{#1}}\xspace}
-      \newcommand{\qRO}[1][H]{\quantum{\RO[#1]}}
-
-      % H: hopping games
-      \newcommandx*{\game}[3][2={},3={},usedefault=@]{\ensuremath{\mathrm{G}^{#2}_{#1}\cb{#3}}}
-
-    %% 2.9 Logic
-    %%
-    %%   Loaded as is; true and false are given math enclosures
-    %%
-
-    \renewcommand{\false}{\ensuremath{\mathsf{false}}}
-    \renewcommand{\true}{\ensuremath{\mathsf{true}}}
-    \newcommand{\valid}{\ensuremath{\top}}
-    \newcommand{\invalid}{\ensuremath{\perp}}
-
-    %% 2.10 Function Families, 2.12 Crypto Primitives
-    %%
-    %%   Not loaded, alternatives provided below...
-
-    %% 2.11 Machine Model, 2.14 Complexity, and 2.15 Asymptotics
-    %%
-    %%   Not loaded, irrelevant
-
-
-    %% 2.13 Events
-    %%
-    %%   Loaded as is
-    \newcommand{\guess}{\event{guess}}
-
-
-    %% 2.16 Keys (+IO)
-    %%
-    %%   Loaded as is, with modification to font style,
-    %%   plus expanded with IO
-
-      % \renewcommand{\pckeystyle}[1]{\ensuremath{\mathnormal{\MakeUppercase{#1}}}}
-      % \newcommand{\pcvarstyle}[1]{\ensuremath{\mathnormal{\MakeUppercase{#1}}}}
-      \newcommand{\pcvarstyle}[1]{\ensuremath{\mathnormal{{#1}}}}
-      \newcommand{\pcdumstyle}[1]{\ensuremath{\mathnormal{\MakeLowercase{#1}}}}
-      \newcommand{\pcaltvarstyle}[1]{\ensuremath{\mathnormal{#1}}}
-
-      \newcommand{\params}{\ensuremath{\mathsf{pm}}}
-      \newcommand{\pparams}{\ensuremath{\mathsf{pp}}}
-
-      \newcommand{\adata}{\pcvarstyle{a}}
-      \newcommand{\ctxt}{\pcvarstyle{c}}
-      %\newcommand{\chalctxt}{\ctxt^*}
-      \newcommand{\digest}{\pcvarstyle{d}}
-      \newcommand{\mssg}{\pcvarstyle{m}}
-      \newcommand{\lkey}{\pcvarstyle{l}}
-      \newcommand{\plain}{\pcvarstyle{x}}
-      \newcommand{\cipher}{\pcvarstyle{y}}
-      \newcommand{\rnd}{\pcvarstyle{r}}
-      \newcommand{\aux}{\pcvarstyle{z}}
-      \newcommand{\nonce}{\pcvarstyle{n}}
-      \newcommand{\asig}{\pcvarstyle{s}}
-      \newcommand{\atag}{\pcvarstyle{t}}
-
-      \newcommand{\altmssg}{\pcvarstyle{m^{\prime}}}
-      \newcommand{\altplain}{\pcvarstyle{x^{\prime}}}
-      \newcommand{\altcipher}{\pcvarstyle{y^{\prime}}}
-      \newcommand{\alttag}{\pcvarstyle{t^{\prime}}}
-      \newcommand{\altaux}{\pcvarstyle{z^{\prime}}}
-
-      \newcommand{\dumadata}{\pcdumstyle{a}}
-      \newcommand{\dumctxt}{\pcdumstyle{c}}
-      \newcommand{\dumdigest}{\pcdumstyle{d}}
-      \newcommand{\dumkey}{\pcdumstyle{k}}
-      \newcommand{\dumpk}{\pcdumstyle{pk}}
-      \newcommand{\dumsk}{\pcdumstyle{sk}}
-      \newcommand{\dummssg}{\pcdumstyle{m}}
-      \newcommand{\dumaltmssg}{\pcdumstyle{m^\prime}}
-      \newcommand{\dumlkey}{\pcdumstyle{l}}
-      \newcommand{\dumplain}{\pcdumstyle{x}}
-      \newcommand{\dumcipher}{\pcdumstyle{y}}
-      \newcommand{\dumrnd}{\pcdumstyle{r}}
-      \newcommand{\dumaux}{\pcdumstyle{z}}
-      \newcommand{\dumnonce}{\pcdumstyle{n}}
-      \newcommand{\dumasig}{\pcdumstyle{s}}
-      \newcommand{\dumatag}{\pcdumstyle{t}}
-
-      \newcommand{\dumchalctxt}{\pcdumstyle{c^{*}}}
-
-
-      \newcommand{\advbit}{\pcaltvarstyle{\hat{b}}\xspace}
-      \newcommand{\advkey}{\pcvarstyle{\hat{k}}\xspace}
-      \newcommand{\advsk}{\pcvarstyle{\hat{SK}}\xspace}
-      \newcommand{\advmssg}{\pcvarstyle{\hat{m}}\xspace}
-      \newcommand{\advnonce}{\pcvarstyle{\hat{n}}\xspace}
-      \newcommand{\advctxt}{\pcvarstyle{\hat{c}}\xspace}
-      \newcommand{\advtag}{\pcvarstyle{\hat{t}}\xspace}
-      \newcommand{\advsig}{\pcvarstyle{\hat{\sigma}}\xspace}
-
-      \newcommand{\chalbit}{\pcaltvarstyle{b^{*}}\xspace}
-      \newcommand{\chalkey}{\pcvarstyle{K^{*}}\xspace}
-      \newcommand{\chalpk}{\pcvarstyle{PK^{*}}\xspace}
-      \newcommand{\chalsk}{\pcvarstyle{SK^{*}}\xspace}
-      \newcommand{\chalmssg}{\pcvarstyle{m^{*}}\xspace}
-      \newcommand{\chalnonce}{\pcvarstyle{n^{*}}\xspace}
-      \newcommand{\chalctxt}{\pcvarstyle{c^{*}}\xspace}
-      \newcommand{\chaldigest}{\pcvarstyle{d^{*}}\xspace}
-      \newcommand{\chaltag}{\pcvarstyle{t^{*}}\xspace}
-
-
-      \newcommand{\submssg}[1]{\pcvarstyle{m_{#1}}}
-      \newcommand{\subctxt}[1]{\pcvarstyle{c_{#1}}}
-
-      \newcommand{\keysub}[2][]{{\if!#1! {\pcvarstyle{k}[#2]}\else {\pcvarstyle{k}_{#1}[#2]}\fi}}
-      \newcommand{\mssgsub}[2][]{{\if!#1! {\pcvarstyle{m}[#2]}\else {\pcvarstyle{m}_{#1}[#2]}\fi}}
-      \newcommand{\ctxtsub}[2][]{{\if!#1! {\pcvarstyle{c}[#2]}\else {\pcvarstyle{c}_{#1}[#2]}\fi}}
-      \newcommand{\plainsub}[2][]{{\if!#1! {\pcvarstyle{x}[#2]}\else {\pcvarstyle{x}_{#1}[#2]}\fi}}
-      \newcommand{\ciphersub}[2][]{{\if!#1! {\pcvarstyle{y}[#2]}\else {\pcvarstyle{y}_{#1}[#2]}\fi}}
-
-      \newcommand{\advmssgsub}[2][]{{\if!#1! {\pcvarstyle{\hat{m}}[#2]}\else {\pcvarstyle{\hat{m}}_{#1}[#2]}\fi}}
-
-      \newcommand{\chalctxtsub}[2][]{{\if!#1! {\pcvarstyle{c^{*}}[#2]}\else {\pcvarstyle{c}^{*}_{#1}[#2]}\fi}}
-      \newcommand{\chalmssgsub}[2][]{{\if!#1! {\pcvarstyle{m^{*}}[#2]}\else {\pcvarstyle{m}^{*}_{#1}[#2]}\fi}}
-
-      \newcommand{\altctxtsub}[2][]{{\if!#1! {\pcvarstyle{c}^{\prime}[#2]}\else {\pcvarstyle{c}^{\prime}_{#1}[#2]}\fi}}
-      \newcommand{\altplainsub}[2][]{{\if!#1! {\pcvarstyle{x}^{\prime}[#2]}\else {\pcvarstyle{x}^{\prime}_{#1}[#2]}\fi}}
-
-      \newcommand{\kemctxt}{\pcvarstyle{c}_1}
-      \newcommand{\demctxt}{\pcvarstyle{c}_2}
-      \newcommand{\demkey}{\pcvarstyle{K}}
-      \newcommand{\advdemkey}{\hat{\demkey}}
-      \newcommand{\altdemkey}{\demkey^\prime}
+  \newcommand{\dotstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallodot}
+  \newcommand{\pcsmallodot}{\mathrel{\mathpalette\pcsmallodotkern\relax}}
+  \newcommand{\pcsmallodotkern}[2]{%
+    \vcenter{\hbox{$#1\scriptstyle\odot$}}%
+  }
+
+  % Right-facing lateral eye (TikZ drawing, scaled)
+  % \observeeye[scale] — raw glyph, used by \observe and \obstore
+    \newcommand{\observeeye}[1][0.12]{\scalebox{-#1}[#1]{%
+      \tikzset{every picture/.style={line width=0.75pt}}%
+      \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+        \draw [line width=4] (300,100.33) .. controls (326,122) and (352,135) .. (378,139.33)
+          .. controls (352,143.67) and (326,156.67) .. (300,178.33);
+        \draw [fill=black,fill opacity=1] (308.94,116.33) .. controls (313.87,116.33) and (317.86,125.51) .. (317.85,136.83)
+          .. controls (317.84,148.15) and (313.84,157.33) .. (308.91,157.33)
+          .. controls (303.99,157.32) and (300,148.14) .. (300.01,136.82)
+          .. controls (300.02,125.5) and (304.02,116.32) .. (308.94,116.33) -- cycle;
+        \draw [draw opacity=0,line width=4] (314.84,166.6) .. controls (311.87,164.64) and (309.14,162.18) .. (306.76,159.24)
+          .. controls (295.12,144.82) and (296.6,124.33) .. (310.07,113.45)
+          .. controls (311.48,112.32) and (312.96,111.33) .. (314.5,110.49) -- (331.14,139.55) -- cycle;
+        \draw [line width=4] (314.84,166.6) .. controls (311.87,164.64) and (309.14,162.18) .. (306.76,159.24)
+          .. controls (295.12,144.82) and (296.6,124.33) .. (310.07,113.45)
+          .. controls (311.48,112.32) and (312.96,111.33) .. (314.5,110.49);
+        \draw [fill=white,fill opacity=1] (304.43,124.2) .. controls (306.09,124.25) and (307.32,128.01) .. (307.18,132.6)
+          .. controls (307.05,137.19) and (305.59,140.88) .. (303.93,140.83)
+          .. controls (302.27,140.78) and (301.03,137.02) .. (301.17,132.43)
+          .. controls (301.31,127.83) and (302.76,124.15) .. (304.43,124.2) -- cycle;
+      \end{tikzpicture}%
+    }}
+  
+  % Observe register: $\observe \register[B]$
+    \newcommand{\observe}{\mathrel{\raisebox{-0.6pt}{\observeeye}}\,}
+  
+  % Observe-and-store: $x \obstore \register[X]$
+    \newcommand{\obstore}{\leftarrow\mathrel{\mkern-2.0mu}\mathrel{\vcenter{\hbox{\observeeye[0.1]}}}\, }
+
+  \newcommand{\initreg}{\gets}
+  \newcommand{\swapreg}{\xleftrightarrow{}}
+  \newcommand{\permute}{\, \cdots\, }
+
+
+  %% 2.1 Security Parameter
+  %%
+  %% Not loaded; note n will be block size, so if needed, use lambda option of cryptocode
+
+
+  %% 2.2 Advantage Terms
+  %%
+  %%   Not loaded; instead the commands are reproduced below, but with the default optional
+  %%   argument changed to the relevant adversary.
+  %%
+  %%   Additionally, similar commands for experiments is provided. The distexperiment has
+  %%   four arguments, by adding an optional first one to indicate the `version'
+  %%   of the experiment (default b) in case of two-experiment distinguishing games.
+
+    \newcommand{\pcadvantagesuperstyle}[1]{\mathrm{\MakeLowercase{#1}}}
+    \newcommand{\pcadvantagesubstyle}[1]{#1}
+    \newcommandx*{\advantage}[3][3=(\adv)]{\ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
+      %% Example usage: \advantage{\indcpa}{\pkescheme}[\bdv]
+
+    \newcommand{\sdash}{\mbox{-}}
+    \newcommandx*{\experiment}[3][3=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
+      %% Example usage: \experiment{\indcpa}{\pkescheme}[\bdv]
+    \newcommandx*{\distexperiment}[4][1=b, 4=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{{#2}\sdash{#1}}}_{\pcadvantagesubstyle{#3}}#4}}
+
+    % H: More flexible commands from the SOA project, as set up by Carlo
+    %MSM: commands below might create a discrepancy with cryptocodex Exp and Adv
+      % Security Games constructor macro
+        % H: Having a hard time understanding what these three do ... ask Carlo
+        \newcommand{\cb}[1]{\ifthenelse{\equal{#1}{}}{}{(#1)}}
+        \newcommandx*{\cbr}[2][2={},usedefault=@]{\ifthenelse{\equal{#1}{} }{}{#1#2}}
+        \newcommandx*{\cbl}[2][2={},usedefault=@]{\ifthenelse{\equal{#1}{} }{}{#2#1}}
+
+        \usepackage{xparse}
+
+        \NewDocumentCommand{\sg}{ommo} {%
+          \ensuremath{%
+            \IfValueTF{#1} {\cbr{#1}[\hy]} {}
+            \pcnotionstyle{#2}
+            \cbl{#3}[\hy]
+            \IfValueTF{#4} {\cbl{#4}[]} {}
+          }%
+        }
+
+        \NewDocumentCommand{\advg}{m D<>{\pkescheme[\secpar]} D(){\Eve{}}}{
+          \ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\cb{#3}}
+        }
+        % Example usage: \advg{\indcca}<\pkescheme>(\adv) ... right?
+
+        \NewDocumentCommand{\expg}{m D<>{\pkescheme[\secpar]} D(){\Eve{}}}{
+          \ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\cb{#3}}
+        }
+
+        % Newer LaTeX Fix: MakeUppercase not working for Cryptocode[x]
+        \renewcommand{\pcnotionstyle}[1]{{\ensuremath{\mathchoice%
+          {\mathrm{#1}}{\mathrm{#1}}{\mathrm{\lowercase{#1}}}{\mathrm{\lowercase{#1}}}}}}
+
+
+  %% 2.3 Math Operators
+  %%
+  %%   Loaded as is, with some additional commands as follows...
+
+    \newcommand{\nope}{\ensuremath{\lightning}}
+    \newcommand{\fail}{\text{\Lightning}} % H; MSM: cryptocodex should have \nope instead
+    \newcommand{\reject}{\ensuremath{\perp}}
+    \newcommand{\mightequal}{\overset?=}
+    \newcommand{\nimplies}{%
+      \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
+    % \newcommand{\plusplus}[1]{{#1}\!+\!+}
+    \newcommand{\getsr}{\sample}
+
+    \newcommand{\eulerphi}{\varphi}
+    \renewcommand{\RR}{\ensuremath{\mathbb{R}}}
+    \renewcommand{\NN}{\ensuremath{\mathbb{N}}}
+    \renewcommand{\CC}{\ensuremath{\mathbb{C}}}
+    \renewcommand{\ZZ}[1][]{{\if!#1!{\ensuremath{\mathbb{Z}}}\else{\ensuremath{\mathbb{Z}_{#1}}}\fi}}%
+    \newcommand{\ZZs}[1][]{{\if!#1!{\ensuremath{\mathbb{Z}^{*}}}\else{\ensuremath{\mathbb{Z}^{*}_{#1}}}\fi}}%
+    \newcommand{\Gq}[1][]{{\if!#1!{\ensuremath{\mathsf{G}_q}}\else{\ensuremath{\mathsf{G}_{#1}}}\fi}}%
+
+    \newcommand{\pcsth}{\highlightkeyword{\ s.th.}}
+
+  %% 2.4 Adversaries
+  %%
+  %%   Loaded, with display changed a la Rogaway (mathbb)
+  %%   \Eve and \Red are there for compatibility purposes
+
+    \renewcommand{\pcadvstyle}[1]{\mathbbm{#1}}
+    \newcommand{\pcadvsubstyle}[1]{\mathrm{\MakeLowercase{#1}}}
+
+    % H: Some simplistic actors
+    %\newcommand{\adversary}{\adv} % already defined 
+    \newcommand{\reduction}{\bdv}
+    \newcommand{\distinguisher}{\ddv}
+    \newcommand{\extractor}{\edv}
+
+    % To-do: make standard value empty (why bugged? probably need an ifelse)
+    \newcommand{\Eve}[1]{\adv_{\pcadvsubstyle{#1}}}
+    \newcommand{\Red}[1]{\bdv_{\pcadvsubstyle{#1}}}
+    \newcommand{\Dis}[1]{\ddv_{\pcadvsubstyle{#1}}}
+    \newcommand{\Ext}[1]{\edv_{\pcadvsubstyle{#1}}}
+
+
+  %% 2.5 Landau
+  %%
+  %%   Loaded as is
+
+  %% 2.6 Probabilities
+  %%
+  %%   probability option of cryptocode already provides
+  %%   \prob{}, \probsub{}, \condprob{}, \condprobsub
+  %%   and then some for expectation, support, and entropy
+  %%
+  %%   Below are added for more involved sampling related probabilities
+
+    %\renewcommand{\probname}{Pr}
+    \newcommand{\probsample}[2]{\prob{#1\,:\,#2}}
+  	\newcommand{\condprobsample}[3]{\ensuremath{\probsample{#1}{#2\,\left|\,#3\vphantom{#1}\right.}}}
+
+
+
+  %% 2.7 Sets
+  %%
+  \newcommand{\card}[1]{\left|#1\right|}
+
+
+  %% 2.8 Crypto Notions
+  %%
+  %%   Loaded, some additional notaions provided below
+
+    % Keep option open of changing typesetting, incl. the hyphen
+    % \mathchardef\pcmathhyphen ="2D
+    % \renewcommand{\pcnotionstyle}[1]{\ensuremath{\mathrm{#1}}}
+
+    \newcommand{\krpas}{\pcnotionstyle{KR\pcmathhyphen{}PAS}\xspace}
+    \newcommand{\krotkca}{\pcnotionstyle{KR\pcmathhyphen{}1KCA}\xspace}
+    \newcommand{\krotkpa}{\pcnotionstyle{KR\pcmathhyphen{}1KPA}\xspace}
+    \newcommand{\krotcpa}{\pcnotionstyle{KR\pcmathhyphen{}1CPA}\xspace}
+    \newcommand{\krkpa}{\pcnotionstyle{KR\pcmathhyphen{}KPA}\xspace}
+    \newcommand{\krcpa}{\pcnotionstyle{KR\pcmathhyphen{}CPA}\xspace}
+    \newcommand{\krcca}{\pcnotionstyle{KR\pcmathhyphen{}CCA}\xspace}
+
+    \newcommand{\ku}{\pcnotionstyle{KU}\xspace} % Key *Unrecoverability*
+    \newcommand{\ror}{\pcnotionstyle{ROR}\xspace}
+
+    \newcommand{\kpa}{\pcnotionstyle{KPA}\xspace}
+    \newcommand{\cpa}{\pcnotionstyle{CPA}\xspace}
+    \newcommand{\cca}{\pcnotionstyle{CCA}\xspace}
+    \newcommand{\pca}{\pcnotionstyle{PCA}\xspace}
+
+    \newcommand{\otind}{\pcnotionstyle{1IND}\xspace}
+    \newcommand{\otlor}{\pcnotionstyle{1LOR}\xspace}
+
+    \newcommand{\prfind}{\pcnotionstyle{IND}\xspace}
+    \newcommand{\nind}{\pcnotionstyle{(N)IND}\xspace}
+    \newcommand{\ivind}{\pcnotionstyle{(IV)IND}\xspace}
+
+    \newcommand{\nindcca}{\pcnotionstyle{(N)IND\pcmathhyphen{}CCA}\xspace}
+
+    \newcommand{\lorcpa}{\pcnotionstyle{LOR\pcmathhyphen{}CPA}\xspace}
+    \newcommand{\lorcca}{\pcnotionstyle{LOR\pcmathhyphen{}CCA}\xspace}
+
+    \newcommand{\prp}{\pcnotionstyle{PRP}\xspace}
+    \newcommand{\sprp}{\pcnotionstyle{SPRP}\xspace}
+
+    \renewcommand{\ae}{\pcnotionstyle{AE}\xspace}  % Warning: This overrides the \ae ligature command!
+    \newcommand{\owot}{\pcnotionstyle{OW\pcmathhyphen{}PAS}\xspace}
+    \newcommand{\owcpa}{\pcnotionstyle{OW\pcmathhyphen{}CPA}\xspace}
+    \newcommand{\owcca}{\pcnotionstyle{OW\pcmathhyphen{}CCA}\xspace}
+    \newcommand{\owpca}{\pcnotionstyle{OW\pcmathhyphen{}PCA}\xspace} % H
+    \newcommand{\qpca}{\pcnotionstyle{qPCA}\xspace} % H
+    \newcommand{\owqpca}{\pcnotionstyle{OW\pcmathhyphen{}qPCA}\xspace} % H
+    \newcommand{\owstar}{\pcnotionstyle{weak\pcmathhyphen{}OW\pcmathhyphen{}CCA}\xspace}
+    \newcommand{\cticpa}{\pcnotionstyle{CTI\pcmathhyphen{}CPA}\xspace}
+
+    % \newcommand{\eufcma}{\pcnotionstyle{EUF\pcmathhyphen{}CMA}}
+    \renewcommand{\seufcma}{\pcnotionstyle{sEUF\pcmathhyphen{}CMA}\xspace}
+    \newcommand{\uufcma}{\pcnotionstyle{UUF\pcmathhyphen{}CMA}\xspace}
+    \newcommand{\eufpas}{\pcnotionstyle{EUF\pcmathhyphen{}PAS}\xspace}
+    \newcommand{\uufpas}{\pcnotionstyle{UUF\pcmathhyphen{}PAS}\xspace}
+
+    \newcommand{\coll}{\pcnotionstyle{COLL}\xspace}
+    \newcommand{\dpre}{\pcnotionstyle{PRE}\xspace}
+    \newcommand{\spre}{\pcnotionstyle{SEC}\xspace}
+
+    \newcommand{\factor}{\pcnotionstyle{FACTOR}\xspace}
+    \newcommand{\rsa}{\pcnotionstyle{RSA}\xspace}
+    \newcommand{\dlp}{\pcnotionstyle{DLP}\xspace}
+    \newcommand{\cdh}{\pcnotionstyle{CDH}\xspace}
+    \newcommand{\ddh}{\pcnotionstyle{DDH}\xspace}
+
+    % H: notion parameters
+    \newcommand{\keys}{\kappa}
+    \newcommand{\bits}{\beta}
+
+    % H: additional game oracles
+    \newcommand{\Oracle}{\pcoraclestyle{O}\xspace}
+    \newcommand{\Okg}{\pcoraclestyle{G}\xspace}
+    \newcommand{\Ochal}{\pcoraclestyle{C}\xspace}
+    \newcommand{\Osend}{\pcoraclestyle{S}\xspace}
+    \newcommand{\Orec}{\pcoraclestyle{R}\xspace}
+    \newcommand{\Otran}{\pcoraclestyle{T}\xspace}
+    \newcommand{\Ocheck}{\pcoraclestyle{P}\xspace}
+    \newcommand{\Osign}{\pcoraclestyle{S}\xspace}
+
+    % H: Random oracles. Usage: \RO = H, \RO[G] = G, etc.
+    \newcommand{\RO}[1][H]{\pcoraclestyle{#1}\xspace}
+    \newcommand{\GO}{\RO[G]}
+
+    %% H: Quantum Oracles
+    \newcommand{\quantum}[1]{\bm{\mathcal{#1}}\xspace}
+    \newcommand{\qRO}[1][H]{\quantum{\RO[#1]}}
+
+    % H: hopping games
+    \newcommandx*{\game}[3][2={},3={},usedefault=@]{\ensuremath{\mathrm{G}^{#2}_{#1}\cb{#3}}}
+
+  %% 2.9 Logic
+  %%
+  %%   Loaded as is; true and false are given math enclosures
+  %%
+
+  \renewcommand{\false}{\ensuremath{\mathsf{false}}}
+  \renewcommand{\true}{\ensuremath{\mathsf{true}}}
+  \newcommand{\valid}{\ensuremath{\top}}
+  \newcommand{\invalid}{\ensuremath{\perp}}
+
+  %% 2.10 Function Families, 2.12 Crypto Primitives
+  %%
+  %%   Not loaded, alternatives provided below...
+
+  %% 2.11 Machine Model, 2.14 Complexity, and 2.15 Asymptotics
+  %%
+  %%   Not loaded, irrelevant
+
+
+  %% 2.13 Events
+  %%
+  %%   Loaded as is
+  \newcommand{\guess}{\event{guess}}
+
+
+  %% 2.16 Keys (+IO)
+  %%
+  %%   Loaded as is, with modification to font style,
+  %%   plus expanded with IO
+
+    % \renewcommand{\pckeystyle}[1]{\ensuremath{\mathnormal{\MakeUppercase{#1}}}}
+    % \newcommand{\pcvarstyle}[1]{\ensuremath{\mathnormal{\MakeUppercase{#1}}}}
+    \newcommand{\pcvarstyle}[1]{\ensuremath{\mathnormal{{#1}}}}
+    \newcommand{\pcdumstyle}[1]{\ensuremath{\mathnormal{\MakeLowercase{#1}}}}
+    \newcommand{\pcaltvarstyle}[1]{\ensuremath{\mathnormal{#1}}}
+
+    \newcommand{\params}{\ensuremath{\mathsf{pm}}}
+    \newcommand{\pparams}{\ensuremath{\mathsf{pp}}}
+
+    \newcommand{\adata}{\pcvarstyle{a}}
+    \newcommand{\ctxt}{\pcvarstyle{c}}
+    %\newcommand{\chalctxt}{\ctxt^*}
+    \newcommand{\digest}{\pcvarstyle{d}}
+    \newcommand{\mssg}{\pcvarstyle{m}}
+    \newcommand{\lkey}{\pcvarstyle{l}}
+    \newcommand{\plain}{\pcvarstyle{x}}
+    \newcommand{\cipher}{\pcvarstyle{y}}
+    \newcommand{\rnd}{\pcvarstyle{r}}
+    \newcommand{\aux}{\pcvarstyle{z}}
+    \newcommand{\nonce}{\pcvarstyle{n}}
+    \newcommand{\asig}{\pcvarstyle{s}}
+    \newcommand{\atag}{\pcvarstyle{t}}
+
+    \newcommand{\altmssg}{\pcvarstyle{m^{\prime}}}
+    \newcommand{\altplain}{\pcvarstyle{x^{\prime}}}
+    \newcommand{\altcipher}{\pcvarstyle{y^{\prime}}}
+    \newcommand{\alttag}{\pcvarstyle{t^{\prime}}}
+    \newcommand{\altaux}{\pcvarstyle{z^{\prime}}}
+
+    \newcommand{\dumadata}{\pcdumstyle{a}}
+    \newcommand{\dumctxt}{\pcdumstyle{c}}
+    \newcommand{\dumdigest}{\pcdumstyle{d}}
+    \newcommand{\dumkey}{\pcdumstyle{k}}
+    \newcommand{\dumpk}{\pcdumstyle{pk}}
+    \newcommand{\dumsk}{\pcdumstyle{sk}}
+    \newcommand{\dummssg}{\pcdumstyle{m}}
+    \newcommand{\dumaltmssg}{\pcdumstyle{m^\prime}}
+    \newcommand{\dumlkey}{\pcdumstyle{l}}
+    \newcommand{\dumplain}{\pcdumstyle{x}}
+    \newcommand{\dumcipher}{\pcdumstyle{y}}
+    \newcommand{\dumrnd}{\pcdumstyle{r}}
+    \newcommand{\dumaux}{\pcdumstyle{z}}
+    \newcommand{\dumnonce}{\pcdumstyle{n}}
+    \newcommand{\dumasig}{\pcdumstyle{s}}
+    \newcommand{\dumatag}{\pcdumstyle{t}}
+
+    \newcommand{\dumchalctxt}{\pcdumstyle{c^{*}}}
+
+
+    \newcommand{\advbit}{\pcaltvarstyle{\hat{b}}\xspace}
+    \newcommand{\advkey}{\pcvarstyle{\hat{k}}\xspace}
+    \newcommand{\advsk}{\pcvarstyle{\hat{SK}}\xspace}
+    \newcommand{\advmssg}{\pcvarstyle{\hat{m}}\xspace}
+    \newcommand{\advnonce}{\pcvarstyle{\hat{n}}\xspace}
+    \newcommand{\advctxt}{\pcvarstyle{\hat{c}}\xspace}
+    \newcommand{\advtag}{\pcvarstyle{\hat{t}}\xspace}
+    \newcommand{\advsig}{\pcvarstyle{\hat{\sigma}}\xspace}
+
+    \newcommand{\chalbit}{\pcaltvarstyle{b^{*}}\xspace}
+    \newcommand{\chalkey}{\pcvarstyle{K^{*}}\xspace}
+    \newcommand{\chalpk}{\pcvarstyle{PK^{*}}\xspace}
+    \newcommand{\chalsk}{\pcvarstyle{SK^{*}}\xspace}
+    \newcommand{\chalmssg}{\pcvarstyle{m^{*}}\xspace}
+    \newcommand{\chalnonce}{\pcvarstyle{n^{*}}\xspace}
+    \newcommand{\chalctxt}{\pcvarstyle{c^{*}}\xspace}
+    \newcommand{\chaldigest}{\pcvarstyle{d^{*}}\xspace}
+    \newcommand{\chaltag}{\pcvarstyle{t^{*}}\xspace}
+
+
+    \newcommand{\submssg}[1]{\pcvarstyle{m_{#1}}}
+    \newcommand{\subctxt}[1]{\pcvarstyle{c_{#1}}}
+
+    \newcommand{\keysub}[2][]{{\if!#1! {\pcvarstyle{k}[#2]}\else {\pcvarstyle{k}_{#1}[#2]}\fi}}
+    \newcommand{\mssgsub}[2][]{{\if!#1! {\pcvarstyle{m}[#2]}\else {\pcvarstyle{m}_{#1}[#2]}\fi}}
+    \newcommand{\ctxtsub}[2][]{{\if!#1! {\pcvarstyle{c}[#2]}\else {\pcvarstyle{c}_{#1}[#2]}\fi}}
+    \newcommand{\plainsub}[2][]{{\if!#1! {\pcvarstyle{x}[#2]}\else {\pcvarstyle{x}_{#1}[#2]}\fi}}
+    \newcommand{\ciphersub}[2][]{{\if!#1! {\pcvarstyle{y}[#2]}\else {\pcvarstyle{y}_{#1}[#2]}\fi}}
+
+    \newcommand{\advmssgsub}[2][]{{\if!#1! {\pcvarstyle{\hat{m}}[#2]}\else {\pcvarstyle{\hat{m}}_{#1}[#2]}\fi}}
+
+    \newcommand{\chalctxtsub}[2][]{{\if!#1! {\pcvarstyle{c^{*}}[#2]}\else {\pcvarstyle{c}^{*}_{#1}[#2]}\fi}}
+    \newcommand{\chalmssgsub}[2][]{{\if!#1! {\pcvarstyle{m^{*}}[#2]}\else {\pcvarstyle{m}^{*}_{#1}[#2]}\fi}}
+
+    \newcommand{\altctxtsub}[2][]{{\if!#1! {\pcvarstyle{c}^{\prime}[#2]}\else {\pcvarstyle{c}^{\prime}_{#1}[#2]}\fi}}
+    \newcommand{\altplainsub}[2][]{{\if!#1! {\pcvarstyle{x}^{\prime}[#2]}\else {\pcvarstyle{x}^{\prime}_{#1}[#2]}\fi}}
+
+    \newcommand{\kemctxt}{\pcvarstyle{c}_1}
+    \newcommand{\demctxt}{\pcvarstyle{c}_2}
+    \newcommand{\demkey}{\pcvarstyle{K}}
+    \newcommand{\advdemkey}{\hat{\demkey}}
+    \newcommand{\altdemkey}{\demkey^\prime}
 
   %%
   %%  Cryptocodex alternatives and extensions to 2.10 and 2.12 of cryptocode
