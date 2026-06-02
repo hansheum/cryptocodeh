@@ -613,7 +613,8 @@
     \providecommand{\pad}{\pcalgostyle{Pad}}
     \providecommand{\unpad}{\pcalgostyle{UnPad}}
     \providecommand{\code}{\pcalgostyle{Code}}
-    \providecommand{\parse}{\pcalgostyle{Parse}}
+    % \parse removed: collided with thmtools' parseargs.sty; the canonical
+    % pseudocode keyword is \pcparse (cryptocode.sty), which is the one used.
 
 \usepackage{tcolorbox}
   \newenvironment{cryptoscheme}{
