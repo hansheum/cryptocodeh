@@ -70,7 +70,7 @@
   \providecommand{\halt}{\ensuremath{\event{halt}}}
 
   %% H: Quantum pseudocode
-  \newcommand{\qubit}{\ensuremath{\bm{\mathsf{q}}}}
+  \newcommand{\qubit}{{\ensuremath{\bm{\mathsf{q}}}}}
   \newcommand{\unitary}[1][U]{\mathrm{#1}}
   \newcommand{\projector}[1][P]{\mathrm{#1}}
   \newcommand{\register}[1][R]{\ensuremath{\bm{\mathsf{#1}}}}
@@ -78,10 +78,10 @@
   \newcommand{\pcbranch}{\highlightkeyword{branch}}
   \newcommand{\pcof}{\, \highlightkeyword{of}}
   
-  \newcommand{\inReg}{\register[X]}
-  \newcommand{\outReg}{\register[Y]}
-  \newcommand{\bitReg}{\register[B]}
-  \newcommand{\ancReg}{\register[A]}
+  \newcommand{\inReg}{{\register[X]}}
+  \newcommand{\outReg}{{\register[Y]}}
+  \newcommand{\bitReg}{{\register[B]}}
+  \newcommand{\ancReg}{{\register[A]}}
   \newcommand{\ctrl}[2]{\mathsf{C} \left(#1\, :\, #2 \right)}
   
   \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
