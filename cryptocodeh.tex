@@ -34,6 +34,13 @@
   %\newcommand{\listapp}{\overset{\frown}{\longleftarrow}} % used in my PhD papers
   \newcommand{\listapp}{\twoheadleftarrow}
   \newcommand{\elms}[1]{\ensuremath{\llbracket #1 \rrbracket}} % overload with predicate notation
+  % Outer product / projector (braket.sty deliberately omits \ketbra). A single
+  % \mathinner avoids the inter-atom gap of \ket{}\bra{}; the \mkern-4mu pulls
+  % \rangle and \langle tip-to-tip into a blackboard-style bowtie. (mu units, so
+  % the kern scales under sub/superscripts.)
+  % \ketbra{x} -> |x><x|  ;  \ketbra[y]{x} -> |x><y|  ;  \Ketbra auto-sizes.
+  \newcommand{\ketbra}[2][]{\ensuremath{\mathinner{|{#2}\rangle\mkern-4mu\langle{\ifx\relax#1\relax #2\else #1\fi}|}}}
+  \newcommand{\Ketbra}[2]{\ensuremath{\left|{#1}\vphantom{#2}\right\rangle\mkern-4mu\left\langle{#2}\vphantom{#1}\right|}}
   \providecommand{\listsample}{\hskip2.3pt{\listapp\!\!\mbox{\scriptsize${\$}$\normalsize}}\,}
   \newcommand{\half}{\nicefrac{1}{2}}
   \newcommand{\notsim}[2]{\abs{#1} \neq \abs{#2}}
@@ -489,6 +496,7 @@
     \newcommand{\Cspace}{\pcsetstyle{C}\xspace}
     \newcommand{\Dspace}{\pcsetstyle{D}\xspace}
     \newcommand{\Fspace}{\pcsetstyle{F}\xspace}
+    \newcommand{\Hspace}{\pcsetstyle{H}\xspace}
     \newcommand{\Ispace}{\pcsetstyle{I}\xspace}
     \newcommand{\Jspace}{\pcsetstyle{J}\xspace}
     \newcommand{\Kspace}{\pcsetstyle{K}\xspace}
