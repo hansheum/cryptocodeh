@@ -33,6 +33,9 @@
   \newcommand{\setapp}{\overset{\cup}{\longleftarrow}}
   %\newcommand{\listapp}{\overset{\frown}{\longleftarrow}} % used in my PhD papers
   \newcommand{\listapp}{\twoheadleftarrow}
+  % Labelled transition arrow; extensible (scales to label) via amsmath \xrightarrow.
+  % \apply{above}  or  \apply[below]{above}
+  \newcommand{\apply}[2][]{\,\xrightarrow[#1]{#2}\,}
   \newcommand{\elms}[1]{\ensuremath{\llbracket #1 \rrbracket}} % overload with predicate notation
   % Outer product / projector (braket.sty deliberately omits \ketbra). A single
   % \mathinner avoids the inter-atom gap of \ket{}\bra{}; the \mkern-4mu pulls
