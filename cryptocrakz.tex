@@ -404,6 +404,33 @@ outer color=transparent!100]
   },
 }
 
+%------------------------------------------------------------------------------
+% \panelcap{<panel>}{<caption>} -- a sub-caption that matches its panel's width.
+%
+% For building grids of self-contained TikZ sub-figures (see e.g. the
+% tightness-loss figures in crakz/loss-*.tex): each cell holds a picture with a
+% wrapped caption underneath, and the caption should line-wrap to the *natural
+% width of that picture* rather than to some fixed column width.
+%
+% Mechanism: the panel is typeset once into the scratch save-box \panelbox so
+% its rendered width \wd\panelbox can be read back; a minipage of exactly that
+% width then stacks the panel over its (small, centred, wrapping) caption.
+%
+% Usage inside a tabular of panels:
+%   \panelcap{\panelAddLin}{(a) Additive loss} & \panelcap{\panelMultLin}{(b) ...} \\
+%
+% NB: \panelbox is allocated here once. A save-box is a global register, so do
+% NOT \newsavebox it again in the individual figure files -- that is what caused
+% the "already defined" clash when two panel files were included together.
+%------------------------------------------------------------------------------
+\newsavebox{\panelbox}
+\newcommand{\panelcap}[2]{% #1 = panel picture, #2 = caption text
+  \sbox{\panelbox}{#1}%
+  \begin{minipage}[t]{\wd\panelbox}\centering
+    \usebox{\panelbox}\par\smallskip {\small #2}%
+  \end{minipage}%
+}
+
 %% MSM: garbage collection of old tikz commands...
 %% WARNING: stealth is deprecated, use Stealth instead!
 \iffalse
