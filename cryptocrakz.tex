@@ -17,6 +17,14 @@
     \usetikzlibrary{calc,scopes,arrows.meta,chains,matrix,positioning,fit,backgrounds,fadings}
     \usetikzlibrary{shapes,shapes.geometric,shapes.symbols,shapes.misc,shapes.callouts}
     \usetikzlibrary{decorations.markings,decorations.pathmorphing,decorations.pathreplacing,decorations.shapes}
+    \let\ctrl\hansctrl
+    \let\permute\hanspermute
+    \let\permute\undefined
+    \usetikzlibrary{quantikz2}
+    \let\circctrl\ctrl
+    \let\ctrl\hansctrl
+    \let\circpermute\permute
+    \let\permute\hanspermute
 
     \pgfdeclarelayer{background}
     \pgfdeclarelayer{channel}
