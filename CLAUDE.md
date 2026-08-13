@@ -14,6 +14,13 @@ general, not project-specific.
   Path-qualified name works because `\usepackage` resolves the relative path
   against the main file's directory.
 
+## quantikz2 namespace (2026-08-13)
+
+`cryptocrakz.tex` loads the quantikz2 tikzlibrary, which claims `\ctrl`,
+`\permute`, and `\swap`. Policy: quantikz owns those names outright, no
+`\let` juggling — cryptocodeh's macros are `\ctrlU` (controlled-unitary
+operator $\mathsf{C}(\cdot:\cdot)$), `\permutereg`, and `\swapreg`.
+
 ## texfrog.sty: `strikeout` package option (2026-07-21)
 
 Goal: `\usepackage[package=cryptocode, strikeout]{texfrog}` makes
