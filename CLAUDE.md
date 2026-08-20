@@ -13,6 +13,63 @@ general, not project-specific.
   `\input`): `\usepackage[package=cryptocode, strikeout]{../cryptocodeh/texfrog}`.
   Path-qualified name works because `\usepackage` resolves the relative path
   against the main file's directory.
+- `texmf/` — a minimal TEXMF tree carrying the Type1 build of JetBrains Mono
+  used by `\monofont` (20 files, ~700 KB). See below; consuming projects must
+  point kpathsea at it.
+- `install-fonts.sh` — one-shot installer for collaborators who do not build
+  with latexmk. Detects OS and TeX distribution, registers (MiKTeX) or copies
+  (TeX Live) the tree, then compiles a test document to prove it worked.
+  Tested on macOS/TeX Live, including the failure path; bash 3.2 compatible.
+- `install-fonts.ps1` — native-Windows-PowerShell companion. **Unverified**:
+  written with no Windows machine available, never executed or parsed. Its
+  header carries the two-command manual fallback.
+
+## `\monofont{...}` and the bundled JetBrains Mono (2026-08-20)
+
+`\monofont{0101}` sets its argument in JetBrains Mono — far more distinct from
+body text than `\texttt` (slashed zero, serifed one), which is the point: bit
+strings should not be mistakable for ordinary numerals. `\monofontshape` is the
+bare font switch if a whole block needs it; `\monofontscale` (default `0.87`)
+brings the font down to the body x-height.
+
+**Text and math render identically.** `\monofont` wraps its argument in
+`\text{}`, which in text mode is `\mbox` and in math mode re-selects the font
+at `\tf@size` — the same box either way. Verified: identical width, height and
+depth to 5 decimal places, and pixel-identical 600 dpi renderings of
+`\monofont{0101gjQ}` vs `$\monofont{0101gjQ}$`, both plain and inside
+`\textbf` (with a positive control confirming the comparison can detect a
+difference). Inside sub/superscripts it scales down with the math style, which
+is the desired behaviour, not an inconsistency.
+
+**Why a bundled TEXMF tree.** pdflatex cannot use the Nerd Font TTFs directly —
+only XeLaTeX/LuaLaTeX can. `texmf/` holds a Type1 build generated with
+`autoinst` from the OTFs in TeX Live's `jetbrainsmono-otf` package (the ASCII
+glyphs are identical: the NL/Nerd patches only drop ligatures and add icons):
+
+```bash
+cp $(kpsewhich --var-value=TEXMFDIST)/fonts/opentype/SIL/jetbrainsmono-otf/JetBrainsMono-{Regular,Bold,Italic,BoldItalic}.otf .
+autoinst -encoding=T1 -typewriter -nots1 -nooldstyle -noproportional \
+         -nosmallcaps -noswash -notitling -nosuperiors -noinferiors \
+         -nofractions -noornaments JetBrainsMono-*.otf
+```
+
+`cryptocodeh.tex` declares the font shapes itself and calls
+`\pdfmapfile{+JetBrainsMono.map}`, so no `updmap` run is needed. The `.fd` is
+shipped lowercased (`t1jetbrainsmono-tlf.fd`) because NFSS looks `.fd` files up
+in lowercase, which matters on case-sensitive filesystems.
+
+**Consuming projects must set the search path.** kpathsea only searches the
+project root non-recursively, so it will not find `cryptocodeh/texmf/` on its
+own. Cheapest fix is a `.latexmkrc` in the project root:
+
+```perl
+$ENV{'TEXMFAUXTREES'} = './cryptocodeh/texmf,';   # trailing comma required
+```
+
+For non-latexmk builds (TeXShop, a plain `pdflatex` invocation, CI), export
+`TEXMFAUXTREES=./cryptocodeh/texmf,` instead. Without it the build dies on a
+missing `JetBrainsMono-Regular-tlf-t1` font — that error means the path is
+unset, not that the files are missing.
 
 ## quantikz2 namespace (2026-08-13)
 

@@ -4,6 +4,40 @@
 \usepackage{bm} % for more bold things including mathcal
 \usepackage[lambda,operators,adversary,landau,probability,sets,notions,logic,events,keys,mm,asymptotics]{cryptocode}
 
+%%% Monospaced font: \monofont{0101}
+% Sets its argument in JetBrains Mono, which is far more distinct from body
+% text than \texttt (slashed zero, serifed one).  Identical in text and math
+% mode: \text hands both cases to the same \hbox at the same \f@size.
+%
+% The Type1 files live in this repo under texmf/, generated from the OTFs in
+% TeX Live's jetbrainsmono-otf package (pdflatex cannot read the Nerd Font
+% TTFs; the ASCII glyphs are identical anyway -- the NL/Nerd patches only drop
+% ligatures and add icons):
+%
+%   autoinst -encoding=T1 -typewriter -nots1 -nooldstyle -noproportional \
+%            -nosmallcaps -noswash -notitling -nosuperiors -noinferiors \
+%            -nofractions -noornaments JetBrainsMono-{Regular,Bold,Italic,BoldItalic}.otf
+%
+% The host project MUST point kpathsea at that tree, e.g. in a .latexmkrc:
+%   $ENV{'TEXMFAUXTREES'} = './cryptocodeh/texmf,';   % trailing comma required
+% or by exporting TEXMFAUXTREES=./cryptocodeh/texmf, before pdflatex.
+\usepackage[T1,OT1]{fontenc}   % T1 for \monofont; OT1 listed last stays default
+\pdfmapfile{+JetBrainsMono.map}
+\newcommand{\monofontscale}{0.87}  % down to the body font's x-height
+\DeclareFontFamily{T1}{JetBrainsMono}{\hyphenchar\font=-1}
+\DeclareFontShape{T1}{JetBrainsMono}{m}{n}  {<-> s*[\monofontscale] JetBrainsMono-Regular-tlf-t1}{}
+\DeclareFontShape{T1}{JetBrainsMono}{m}{it} {<-> s*[\monofontscale] JetBrainsMono-Italic-tlf-t1}{}
+\DeclareFontShape{T1}{JetBrainsMono}{b}{n}  {<-> s*[\monofontscale] JetBrainsMono-Bold-tlf-t1}{}
+\DeclareFontShape{T1}{JetBrainsMono}{b}{it} {<-> s*[\monofontscale] JetBrainsMono-BoldItalic-tlf-t1}{}
+\DeclareFontShape{T1}{JetBrainsMono}{m}{sl} {<-> ssub * JetBrainsMono/m/it}{}
+\DeclareFontShape{T1}{JetBrainsMono}{b}{sl} {<-> ssub * JetBrainsMono/b/it}{}
+\DeclareFontShape{T1}{JetBrainsMono}{bx}{n} {<-> ssub * JetBrainsMono/b/n}{}
+\DeclareFontShape{T1}{JetBrainsMono}{bx}{it}{<-> ssub * JetBrainsMono/b/it}{}
+\DeclareFontShape{T1}{JetBrainsMono}{bx}{sl}{<-> ssub * JetBrainsMono/b/it}{}
+% Font switch, if a whole block needs it; \monofont{...} is the usual entry point.
+\newcommand{\monofontshape}{\fontencoding{T1}\fontfamily{JetBrainsMono}\selectfont}
+\DeclareRobustCommand{\monofont}[1]{\text{\monofontshape #1}}
+
   \DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
   \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
 
@@ -37,6 +71,7 @@
   % Labelled transition arrow; extensible (scales to label) via amsmath \xrightarrow.
   % \apply{above} or \apply[below]{above}
   \newcommand{\apply}[2][]{\,\xrightarrow[#1]{#2}\,}
+  \newcommand{\lrapply}[2][]{\,\xleftrightarrow[#1]{#2}\,}
   \newcommand{\elms}[1]{\ensuremath{\llbracket #1 \rrbracket}} % overload with predicate notation
   % Outer product / projector (braket.sty deliberately omits \ketbra). A single
   % \mathinner avoids the inter-atom gap of \ket{}\bra{}; the \mkern-4mu pulls
