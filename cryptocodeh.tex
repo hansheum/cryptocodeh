@@ -135,19 +135,19 @@
   \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
   \newcommand{\pcsmalloplus}{\mathrel{\mathpalette\pcsmallopluskern\relax}}
   \newcommand{\pcsmallopluskern}[2]{%
-    \vcenter{\hbox{$#1\scriptstyle\oplus$}}%
+    \vcenter{\hbox{$#1\scriptstyle\bm{\oplus}$}}%
   }
   
   \newcommand{\zstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallominus}
   \newcommand{\pcsmallominus}{\mathrel{\mathpalette\pcsmallominuskern\relax}}
   \newcommand{\pcsmallominuskern}[2]{%
-    \vcenter{\hbox{$#1\scriptstyle\ominus$}}%
+    \vcenter{\hbox{$#1\vphantom{\scriptstyle\bm{\ominus}}\smash{\hat{\mbox{$\scriptstyle\bm{\ominus}$}}}$}}%
   }
   
   \newcommand{\dotstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallodot}
   \newcommand{\pcsmallodot}{\mathrel{\mathpalette\pcsmallodotkern\relax}}
   \newcommand{\pcsmallodotkern}[2]{%
-    \vcenter{\hbox{$#1\scriptstyle\odot$}}%
+    \vcenter{\hbox{$#1\scriptstyle\bm{\odot}$}}%
   }
 
   % Right-facing lateral eye (TikZ drawing, scaled)
@@ -179,6 +179,9 @@
   
   % Observe-and-store: $x \obstore \register[X]$
     \newcommand{\obstore}{\leftarrow\mathrel{\mkern-2.0mu}\mathrel{\vcenter{\hbox{\observeeye[0.1]}}}\, }
+
+  % Hatted observe-and-store: $x \hobstore \register[X]$
+    \newcommand{\hobstore}{\leftarrow\mathrel{\mkern-2.0mu}\mathrel{\vcenter{\hbox{$\vphantom{\mbox{\observeeye[0.1]}}\smash{\hat{\mbox{\raisebox{0pt}[\dimexpr\height-0.5pt\relax][0pt]{\observeeye[0.1]}}}}$}}}\, }
 
   \newcommand{\initreg}{\gets}
   \newcommand{\swapreg}{\xleftrightarrow{}}
