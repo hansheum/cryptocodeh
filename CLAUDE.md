@@ -32,6 +32,14 @@ strings should not be mistakable for ordinary numerals. `\monofontshape` is the
 bare font switch if a whole block needs it; `\monofontscale` (default `0.87`)
 brings the font down to the body x-height.
 
+**Upright is pinned.** llncs theorem/definition/lemma bodies set `\itshape`,
+and because the family has a real italic cut, `\monofont` was picking it up and
+slanting bit strings — in math too, since `\text` inherits the outer text font.
+`\monofontshape` therefore forces `\fontshape{\updefault}`. Series is left
+inherited, so it still goes bold in headings; `\monofontshape\itshape` still
+reaches the italic cut for anyone who deliberately wants it. Verified
+layout-neutral on the full QROM document (105 pages either way).
+
 **Text and math render identically.** `\monofont` wraps its argument in
 `\text{}`, which in text mode is `\mbox` and in math mode re-selects the font
 at `\tf@size` — the same box either way. Verified: identical width, height and

@@ -35,7 +35,12 @@
 \DeclareFontShape{T1}{JetBrainsMono}{bx}{it}{<-> ssub * JetBrainsMono/b/it}{}
 \DeclareFontShape{T1}{JetBrainsMono}{bx}{sl}{<-> ssub * JetBrainsMono/b/it}{}
 % Font switch, if a whole block needs it; \monofont{...} is the usual entry point.
-\newcommand{\monofontshape}{\fontencoding{T1}\fontfamily{JetBrainsMono}\selectfont}
+% \updefault pins the shape upright: theorem/definition/lemma bodies set
+% \itshape, and a literal must not slant just because of where it sits.  Series
+% is left inherited, so it still goes bold in headings.  (\monofontshape\itshape
+% still reaches the italic cut deliberately.)
+\newcommand{\monofontshape}{%
+  \fontencoding{T1}\fontfamily{JetBrainsMono}\fontshape{\updefault}\selectfont}
 \DeclareRobustCommand{\monofont}[1]{\text{\monofontshape #1}}
 
   \DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
@@ -142,6 +147,19 @@
   \newcommand{\pcsmallominus}{\mathrel{\mathpalette\pcsmallominuskern\relax}}
   \newcommand{\pcsmallominuskern}[2]{%
     \vcenter{\hbox{$#1\vphantom{\scriptstyle\bm{\ominus}}\smash{\hat{\mbox{$\scriptstyle\bm{\ominus}$}}}$}}%
+  }
+
+  % Alphabet-swapped variants: \hxstore is \xstore with a hat, \czstore is \zstore without.
+  \newcommand{\hxstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallhoplus}
+  \newcommand{\pcsmallhoplus}{\mathrel{\mathpalette\pcsmallhopluskern\relax}}
+  \newcommand{\pcsmallhopluskern}[2]{%
+    \vcenter{\hbox{$#1\vphantom{\scriptstyle\bm{\oplus}}\smash{\hat{\mbox{$\scriptstyle\bm{\oplus}$}}}$}}%
+  }
+
+  \newcommand{\czstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallcominus}
+  \newcommand{\pcsmallcominus}{\mathrel{\mathpalette\pcsmallcominuskern\relax}}
+  \newcommand{\pcsmallcominuskern}[2]{%
+    \vcenter{\hbox{$#1\scriptstyle\bm{\ominus}$}}%
   }
   
   \newcommand{\dotstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmallodot}
