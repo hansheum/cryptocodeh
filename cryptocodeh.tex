@@ -152,6 +152,23 @@
   \newcommand{\bitReg}{{\register[B]}}
   \newcommand{\ancReg}{{\register[A]}}
   \newcommand{\ctrlU}[2]{\mathsf{C} \left(#1\, :\, #2 \right)}
+
+  %% H: Standard gates
+  % Moved here from QROM-toolbox's qrot-latex.tex (2026-08-28) so pqnce and the
+  % toolbox share one definition. All build on \unitary above, so they follow
+  % whatever shape \unitary is given. Non-standard/derived gates (\eCXgate,
+  % \hCZgate, \SORTgate) stay project-local in qrot-latex.tex.
+  \newcommand{\Xgate}{\unitary[X]}
+  \newcommand{\Ygate}{\unitary[Y]}
+  \newcommand{\Zgate}{\unitary[Z]}
+  \newcommand{\Hgate}{\unitary[H]}
+  \newcommand{\Sgate}{\unitary[S]}
+  \newcommand{\Tgate}{\unitary[T]}
+  \newcommand{\CXgate}{\unitary[CX]}
+  \newcommand{\CCXgate}{\unitary[CCX]}
+  \newcommand{\CZgate}{\unitary[CZ]}
+  \newcommand{\SWAPgate}{\unitary[SWAP]}
+  \newcommand{\CSWAPgate}{\unitary[CSWAP]}
   
   \newcommand{\xstore}{\leftarrow\mathrel{\mkern-2.0mu}\pcsmalloplus}
   \newcommand{\pcsmalloplus}{\mathrel{\mathpalette\pcsmallopluskern\relax}}

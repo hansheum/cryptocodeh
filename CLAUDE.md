@@ -98,6 +98,26 @@ If one of them is ever migrated onto cryptocodeh, flip that local
 `\newcommand{\bits}{\beta}` to `\renewcommand` — as a `\newcommand` it will
 clash with the definition here.
 
+## Standard gates: `\Xgate`, `\Hgate`, … (2026-08-28)
+
+Moved here from QROM-toolbox's `qrot-latex.tex` for the same reason as the
+bit-string notation above: pqSimstar had copied quantum pseudocode across and
+hit `Undefined control sequence \Hgate`, because the gates were project-local
+to the toolbox.
+
+Shared here: `\Xgate`, `\Ygate`, `\Zgate`, `\Hgate`, `\Sgate`, `\Tgate`,
+`\CXgate`, `\CCXgate`, `\CZgate`, `\SWAPgate`, `\CSWAPgate` – all one-liners
+over `\unitary`, so they inherit its shape (`\mathrm` here; the toolbox's old
+`\mathsf` version was already commented out, so nothing re-renders).
+
+Deliberately NOT moved, and still in `qrot-latex.tex`: `\eCXgate`
+(`\CXgate_\emptystring`), `\hCZgate` (hatted control), `\SORTgate` – derived
+or non-standard, and specific to the toolbox's development. They keep working
+there since they build on the primitives defined here.
+
+Consumers load `cryptocodeh.tex` before their own `*-latex.tex`, so a project
+that wants a different shape can still `\renewcommand` locally.
+
 ## quantikz2 namespace (2026-08-13)
 
 `cryptocrakz.tex` loads the quantikz2 tikzlibrary, which claims `\ctrl`,
