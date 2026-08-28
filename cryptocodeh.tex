@@ -43,6 +43,22 @@
   \fontencoding{T1}\fontfamily{JetBrainsMono}\fontshape{\updefault}\selectfont}
 \DeclareRobustCommand{\monofont}[1]{\text{\monofontshape #1}}
 
+%%% Bit strings: \bits{0101}, and the single bits \nil, \one
+% \bits is the notation-level entry point (\monofont is the font-level one):
+% literal bit strings, set apart from ordinary numerals in the surrounding
+% text.  \nil and \one are the two single bits, \bin the alphabet they form.
+%
+% The hatted variants are the dual (Hadamard) alphabet, \hbin = \{+,-\}, in
+% which \hnil = \ket{+} and \hone = \ket{-}; a hat over a bit string means it
+% is to be read over that alphabet rather than over \bin.
+\newcommand{\bits}[1]{\monofont{#1}}
+\newcommand{\nil}{\ensuremath{\bits 0}}
+\newcommand{\one}{\ensuremath{\bits 1}}
+\newcommand{\hnil}{\ensuremath{\hat{\bits 0}}}
+\newcommand{\hone}{\ensuremath{\hat{\bits 1}}}
+\renewcommand{\bin}{\ensuremath{\{\nil, \one\}}}   % cryptocode's \{0,1\}
+\newcommand{\hbin}{\ensuremath{\{ \hnil, \hone\}}}
+
   \DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
   \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
 
@@ -397,9 +413,10 @@
     \newcommand{\cdh}{\pcnotionstyle{CDH}\xspace}
     \newcommand{\ddh}{\pcnotionstyle{DDH}\xspace}
 
-    % H: notion parameters
+    % H: notion parameters.  There was a \bits = \beta here until the
+    % bit-string notation above took the name (2026-08-28); the few
+    % documents that used it define it locally anyway.
     \newcommand{\keys}{\kappa}
-    \newcommand{\bits}{\beta}
 
     % H: additional game oracles
     \newcommand{\Oracle}{\pcoraclestyle{O}\xspace}

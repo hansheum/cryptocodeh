@@ -79,6 +79,25 @@ For non-latexmk builds (TeXShop, a plain `pdflatex` invocation, CI), export
 missing `JetBrainsMono-Regular-tlf-t1` font — that error means the path is
 unset, not that the files are missing.
 
+## Bit-string notation: `\bits`, `\nil`, `\bin`, … (2026-08-28)
+
+Moved here from the QROM-toolbox project, so every consumer gets one spelling
+of the notation instead of a per-project `\renewcommand`. `\monofont` is the
+font-level entry point; `\bits{0101}` is the notation-level one, and on top of
+it sit the single bits `\nil` / `\one` and their alphabet `\bin` (a
+`\renewcommand` over cryptocode's plain `\{0,1\}`), plus the dual-alphabet
+(Hadamard) variants `\hnil` = |+>, `\hone` = |->, `\hbin`.
+
+The notion parameter `\bits` = `\beta` that used to sit in the 2.8 Crypto
+Notions block is **gone**, since the bit-string macro took the name. Nothing
+that loads this file was using it: the projects that write `\bits` in the
+`\beta` sense (multiuserhybrid and its siblings — MultiUser, WeakerSOA,
+MultiInstance, thesis) load the frozen `cryptocodex.tex` in their own repo, not
+this submodule, and each already defines `\bits` locally in its `*-latex.tex`.
+If one of them is ever migrated onto cryptocodeh, flip that local
+`\newcommand{\bits}{\beta}` to `\renewcommand` — as a `\newcommand` it will
+clash with the definition here.
+
 ## quantikz2 namespace (2026-08-13)
 
 `cryptocrakz.tex` loads the quantikz2 tikzlibrary, which claims `\ctrl`,
