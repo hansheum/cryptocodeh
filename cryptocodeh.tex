@@ -255,13 +255,29 @@
 
     \newcommand{\pcadvantagesuperstyle}[1]{\mathrm{\MakeLowercase{#1}}}
     \newcommand{\pcadvantagesubstyle}[1]{#1}
-    \newcommandx*{\advantage}[3][3=(\adv)]{\ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
-      %% Example usage: \advantage{\indcpa}{\pkescheme}[\bdv]
+    %% The trailing optional argument names the adversary and is
+    %% parenthesised automatically:
+    %%   \advantage{\indcpa}{\pkescheme}          -> Adv^{ind-cpa}_{PKE}(A)
+    %%   \advantage{\indcpa}{\pkescheme}[\bdv]    -> Adv^{ind-cpa}_{PKE}(B)
+    %%   \advantage{\indcpa}{\pkescheme}[]        -> Adv^{ind-cpa}_{PKE}
+    %% An argument that already opens with `(' or `\left' is emitted as
+    %% is, so the older [(\bdv)] and [\left(\bdv^{\adv}\right)] spellings
+    %% still render a single pair.
+    \ExplSyntaxOn
+    \NewDocumentCommand{\pcadvargstyle}{m}
+      {
+        \tl_if_blank:nF {#1}
+          {
+            \tl_if_head_eq_charcode:nNTF {#1} ( { #1 }
+              { \tl_if_head_eq_meaning:nNTF {#1} \left { #1 } { (#1) } }
+          }
+      }
+    \ExplSyntaxOff
+    \NewDocumentCommand{\advantage}{m m O{(\adv)}}{\ensuremath{\mathsf{Adv}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\pcadvargstyle{#3}}}
 
     \newcommand{\sdash}{\mbox{-}}
-    \newcommandx*{\experiment}[3][3=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}#3}}
-      %% Example usage: \experiment{\indcpa}{\pkescheme}[\bdv]
-    \newcommandx*{\distexperiment}[4][1=b, 4=(\adv)]{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{{#2}\sdash{#1}}}_{\pcadvantagesubstyle{#3}}#4}}
+    \NewDocumentCommand{\experiment}{m m O{(\adv)}}{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{#1}}_{\pcadvantagesubstyle{#2}}\pcadvargstyle{#3}}}
+    \NewDocumentCommand{\distexperiment}{O{b} m m O{(\adv)}}{\ensuremath{\mathsf{Exp}^{\pcadvantagesuperstyle{{#2}\sdash{#1}}}_{\pcadvantagesubstyle{#3}}\pcadvargstyle{#4}}}
 
     % H: More flexible commands from the SOA project, as set up by Carlo
     %MSM: commands below might create a discrepancy with cryptocodex Exp and Adv

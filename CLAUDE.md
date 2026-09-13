@@ -285,3 +285,38 @@ Noticed while testing, NOT fixed (pre-existing, unrelated to multi-line):
 `\__tf_extract_wrap_prefix:N` lifts `\item` out of the box but leaves an
 `\item[⋆]` optional argument inside it, so a decorated `\item[⋆] x` renders as
 "[⋆] x" in the box instead of using ⋆ as the list label.
+
+## `\advantage` / `\experiment` / `\distexperiment`: smart adversary argument (2026-09-13)
+
+The trailing optional argument names the adversary and is now parenthesised
+by the macro, via the shared helper `\pcadvargstyle` (expl3, defined right
+above `\advantage`). Four cases, all rendered and checked by eye:
+
+| written                                  | renders                    |
+|------------------------------------------|----------------------------|
+| `\advantage{\indcpa}{\pkescheme}`        | Adv^{ind-cpa}_{PKE}(A)     |
+| `\advantage{\indcpa}{\pkescheme}[\bdv]`  | Adv^{ind-cpa}_{PKE}(B)     |
+| `\advantage{\indcpa}{\pkescheme}[]`      | Adv^{ind-cpa}_{PKE}        |
+| `\advantage{\indcpa}{\pkescheme}[(\bdv)]`| Adv^{ind-cpa}_{PKE}(B)     |
+
+The last row is the backward-compatibility rule: an argument whose first
+token is `(` or `\left` is emitted as is, so the ~100 existing
+`[(\bdv)]` sites and the five `[\left(\bdv^{\adv}\right)]` sites in
+QROM-toolbox keep rendering one pair. The tests are
+`\tl_if_head_eq_charcode:nNTF {#1} (` and
+`\tl_if_head_eq_meaning:nNTF {#1} \left`; a bare macro head such as `\bdv`
+fails the charcode test (charcode 256), which is what makes `[\bdv]` gain
+its parentheses. Consequence: `[(\adv)^2]` is passed through
+unparenthesised, and `[{(\adv)^2}]` too (the argument grabber strips one
+outer brace pair, measured: `[{\bdv}]` renders `(B)`), so write
+`[((\adv)^2)]` if that ever comes up.
+
+The three macros moved from xargs `\newcommandx*` to `\NewDocumentCommand`
+(`m m O{(\adv)}`, and `O{b} m m O{(\adv)}` for `\distexperiment`); calling
+conventions are unchanged. `\advg`/`\expg` with their own `\cb` helper were
+left alone.
+
+Before the change, live bare-argument sites (`[\bdv]` without parentheses)
+existed only in commented-out lines and `old-ideas/` in QROM-toolbox, so no
+in-use document changes rendering. pqSimstar builds with the new file (only
+error is its own pre-existing undefined `\rorcpab`).
