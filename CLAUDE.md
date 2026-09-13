@@ -222,3 +222,66 @@ ranges take the range branch and are already endpoint-validated by
 Status: DONE and verified — full doc compiles clean; reintroducing `G0-G6`
 fails with exit 1 and a clear `Package texfrog Error: Unknown game 'G0-G6'
 referenced ... Known games are: G0, G1, G2, G3, G4, G5.`
+
+## texfrog.sty: multi-line `\tfonly` content (2026-09-08)
+
+`\tfonly{G1,G2}{...}` now accepts several lines in its content argument, in
+all three package profiles:
+
+```latex
+\tfonly{G1-G3}{
+  x \sample \bin^n \\
+  y \gets f(x) \\
+}                                  % cryptocode:      \\-separated
+\tfonly{G1-G3}{\item a \item b}    % nicodemus:       \item-introduced
+\tfonly{G1-G3}{\State a \State b}  % algpseudocodex:  \State-introduced
+```
+
+Only the *decorated* paths needed fixing – highlight (`\tfchanged`),
+strikeout (`\tfremoved`) and the figure-mode game comment (`\tfgamelabel`).
+Clean mode, record mode and unchanged lines in a diff emit the argument
+verbatim and always accepted several lines; the decorated paths wrapped the
+whole argument in one box, which in cryptocode is a hard error (`\\` inside
+`\colorbox{$\displaystyle ...$}`) and in the list profiles would bury `\item`
+/ `\State` inside a box.
+
+Implementation (all in the wrapping section, near `\__tf_do_wrap:nnN`):
+- `\__tf_split_lines:n` fills `\g__tf_lines_seq` (line bodies) and
+  `\g__tf_seps_seq` (the separator to re-emit after each body). Two branches,
+  chosen by the profile: `\__tf_split_lines_sep:n` cuts at top-level `\\`
+  (regex `\c{\\} \s* (\[[^\]]*\])?`, the capture group carrying `\\[2mm]`-style
+  optional arguments back to the line they belong to), `\__tf_split_lines_mark:n`
+  cuts before top-level `\item` / `\State` and puts the marker back from the new
+  profile field `\g__tf_linemark_tl`.
+- `\__tf_wrap_lines:nnN` maps `\__tf_do_wrap:nnN` over the lines, handing each
+  its separator through the global `\g__tf_wrap_sep_tl` (global because
+  emitting a line can close a group – the algpseudocodex `\State` problem
+  already documented at `\__tf_do_wrap:nnN`). `\__tf_wrap_gamelabel:nn` parks
+  its label list in the global `\g__tf_wrap_extra_tl` for the same reason.
+- `\__tf_do_wrap:nnN` seeds its suffix from that separator instead of clearing
+  it, and no longer boxes a line whose content is blank (a bare `\item` or
+  `\\` is emitted as-is, not as an empty `\colorbox`).
+
+**`\regex_split:nnN`, not `\seq_set_split:Nnn`** – measured: the latter strips
+one set of outer braces per item, so a line `{\color{red}...}` would come back
+as a bare `\color{red}` switch leaking into everything after it.
+
+Limitation: the cut is at *top-level* `\\` / `\item` / `\State`, so an `array`
+sitting at the top level of one `\tfonly` line has its row separators mistaken
+for line breaks. Brace it (`{\begin{array}...\end{array}}`) if that comes up.
+
+Figure mode puts the game comment on *every* line of a multi-line block, which
+is what the same lines written as separate `\tfonly`s already produced.
+
+Status: DONE and verified.
+- Functional: synthetic documents in all three profiles (diff, `strikeout`,
+  figure), covering inner `\color`, `\\[2mm]`, and long lines wrapping inside
+  the algpseudocodex varwidth box.
+- Layout-neutral for existing single-line usage: pqSimstar (cryptocode,
+  30 pages) and ake-state-reveals (nicodemus, 21 `\tfonly`s, 48 pages) built
+  old vs new are **pixel-identical on every page** (`pdftoppm -r 100` + `cmp`).
+
+Noticed while testing, NOT fixed (pre-existing, unrelated to multi-line):
+`\__tf_extract_wrap_prefix:N` lifts `\item` out of the box but leaves an
+`\item[⋆]` optional argument inside it, so a decorated `\item[⋆] x` renders as
+"[⋆] x" in the box instead of using ⋆ as the list label.

@@ -62,6 +62,11 @@
 % Game label comment command (e.g., \pccomment for cryptocode)
 \tl_new:N \g__tf_gamelabel_cmd_tl
 
+% Token that INTRODUCES a line in packages that do not separate lines
+% with \\ (\item for nicodemus, \State for algpseudocodex); empty for
+% packages that use \\.  See the line splitter below.
+\tl_new:N \g__tf_linemark_tl
+
 % ----------------------------------------------------------------------
 % Package options (processed via \usepackage[package=...]{texfrog})
 % ----------------------------------------------------------------------
@@ -80,6 +85,7 @@
         \tl_gset:Nn \g__tf_package_tl { cryptocode }
         \bool_gset_true:N \g__tf_math_mode_bool
         \bool_gset_true:N \g__tf_line_sep_bool
+        \tl_gclear:N \g__tf_linemark_tl
         \tl_gset:Nn \g__tf_gamelabel_cmd_tl { \pccomment }
       },
     package / nicodemus .code:n =
@@ -87,6 +93,7 @@
         \tl_gset:Nn \g__tf_package_tl { nicodemus }
         \bool_gset_false:N \g__tf_math_mode_bool
         \bool_gset_false:N \g__tf_line_sep_bool
+        \tl_gset:Nn \g__tf_linemark_tl { \item }
         \tl_gclear:N \g__tf_gamelabel_cmd_tl
       },
     package / algpseudocodex .code:n =
@@ -94,6 +101,7 @@
         \tl_gset:Nn \g__tf_package_tl { algpseudocodex }
         \bool_gset_false:N \g__tf_math_mode_bool
         \bool_gset_false:N \g__tf_line_sep_bool
+        \tl_gset:Nn \g__tf_linemark_tl { \State }
         \tl_gset:Nn \g__tf_gamelabel_cmd_tl { \Comment }
       },
     % Custom message (rather than l3keys' generic "accepts only a fixed
@@ -109,6 +117,7 @@
         \tl_gset:Nn \g__tf_package_tl { cryptocode }
         \bool_gset_true:N \g__tf_math_mode_bool
         \bool_gset_true:N \g__tf_line_sep_bool
+        \tl_gclear:N \g__tf_linemark_tl
         \tl_gset:Nn \g__tf_gamelabel_cmd_tl { \pccomment }
       },
     package .initial:n = cryptocode,
@@ -659,15 +668,133 @@
   \fi
 }
 
+% ======================================================================
+% Multi-line \tfonly content: cutting an argument into single lines
+% ======================================================================
+% Decoration (highlight, strikeout, figure game label) has to be applied
+% ONE LINE AT A TIME: a cryptocode body is a math array, so a \\ inside
+% the \colorbox / \sout box is a hard error, and in the list profiles
+% every \item / \State must stay at the top level of the list.  The
+% splitter below cuts the argument of a \tfonly into single lines, which
+% \__tf_wrap_lines:nnN then decorates one by one, re-emitting each with
+% the separator it carried.
+%
+% The undecorated paths -- clean mode, record mode, and lines that a
+% diff leaves unchanged -- pass the argument through verbatim and never
+% come here; those have always accepted several lines.
+%
+% How a line is delimited depends on the package profile:
+%   cryptocode       lines are SEPARATED by a trailing \\, which may
+%                    carry an optional argument (\\[2mm])
+%   nicodemus        lines are INTRODUCED by \item
+%   algpseudocodex   lines are INTRODUCED by \State
+% The introducing token is \g__tf_linemark_tl (empty for cryptocode).
+%
+% Limitation: the cut is made at TOP-LEVEL \\ / \item / \State tokens,
+% so the row separators of an array that sits at the top level of a
+% single \tfonly line are mistaken for line breaks -- brace such an
+% array ({\begin{array}...\end{array}}) if that ever comes up.
+%
+% \regex_split:nnN rather than \seq_set_split:Nnn: the latter strips one
+% set of outer braces per item, which silently turns a line of the form
+% {\color{red}...} into a colour switch leaking into the rest of the
+% rendering.
+
+\seq_new:N \l__tf_raw_lines_seq   % pieces as returned by the splitter
+\seq_new:N \g__tf_lines_seq       % line bodies, separator removed
+\seq_new:N \g__tf_seps_seq        % separator to re-emit after each body
+\tl_new:N \l__tf_pending_tl       % body awaiting its separator
+\tl_new:N \g__tf_wrap_sep_tl      % separator of the line being wrapped
+\tl_new:N \g__tf_wrap_extra_tl    % first argument of \tfgamelabel
+
+\cs_generate_variant:Nn \seq_gput_right:Nn { NV, Ne }
+
+\cs_new_protected:Nn \__tf_split_lines:n
+  {
+    \seq_gclear:N \g__tf_lines_seq
+    \seq_gclear:N \g__tf_seps_seq
+    \bool_if:NTF \g__tf_line_sep_bool
+      { \__tf_split_lines_sep:n { #1 } }
+      {
+        \tl_if_empty:NTF \g__tf_linemark_tl
+          { \seq_gput_right:Nn \g__tf_lines_seq { #1 } } % no line structure
+          { \__tf_split_lines_mark:n { #1 } }
+      }
+  }
+
+% Separator profile (cryptocode): cut at each top-level \\.  The
+% optional argument of that \\ is a capture group, so the split returns
+% body, optional argument, body, optional argument, ..., body -- the
+% even positions carry the optional argument (empty when there is none)
+% of the separator that ended the preceding body.
+\cs_new_protected:Nn \__tf_split_lines_sep:n
+  {
+    \regex_split:nnN { \c{\\} \s* (\[[^\]]*\])? } { #1 } \l__tf_raw_lines_seq
+    \tl_clear:N \l__tf_pending_tl
+    \seq_map_indexed_inline:Nn \l__tf_raw_lines_seq
+      {
+        \int_if_odd:nTF { ##1 }
+          { \tl_set:Nn \l__tf_pending_tl { ##2 } }
+          {
+            \seq_gput_right:NV \g__tf_lines_seq \l__tf_pending_tl
+            \seq_gput_right:Ne \g__tf_seps_seq
+              { ~ \exp_not:N \\ \exp_not:n { ##2 } }
+            \tl_clear:N \l__tf_pending_tl
+          }
+      }
+    % The piece after the last \\ is a line only if it holds something:
+    % content ending in \\ (the common case) leaves it blank.
+    \tl_if_blank:VF \l__tf_pending_tl
+      { \seq_gput_right:NV \g__tf_lines_seq \l__tf_pending_tl }
+  }
+
+% Marker profile (nicodemus, algpseudocodex): cut before each top-level
+% \item / \State.  Which of the two introduces a line is fixed by the
+% package profile, so the marker is put back from \g__tf_linemark_tl
+% instead of from the match.  No separators: the marker travels with the
+% body and \__tf_extract_wrap_prefix:N lifts it back out of the box.
+\cs_new_protected:Nn \__tf_split_lines_mark:n
+  {
+    \regex_split:nnN { \c{(?:item|State)} } { #1 } \l__tf_raw_lines_seq
+    \seq_map_indexed_inline:Nn \l__tf_raw_lines_seq
+      {
+        \int_compare:nNnTF { ##1 } = { 1 }
+          {
+            % whatever precedes the first marker (a fragment that does
+            % not open a line of its own) is kept as it stands
+            \tl_if_blank:nF { ##2 }
+              { \seq_gput_right:Nn \g__tf_lines_seq { ##2 } }
+          }
+          {
+            \seq_gput_right:Ne \g__tf_lines_seq
+              { \exp_not:V \g__tf_linemark_tl \exp_not:n { ##2 } }
+          }
+      }
+  }
+
+% Decorate every line of #1 separately with #3 (extra first argument #2).
+% \g__tf_wrap_sep_tl hands each line's separator to \__tf_do_wrap:nnN;
+% it is global because emitting a line can close a group (see there).
+\cs_new_protected:Nn \__tf_wrap_lines:nnN
+  {
+    \__tf_split_lines:n { #1 }
+    \seq_map_inline:Nn \g__tf_lines_seq
+      {
+        \seq_gpop_left:NNTF \g__tf_seps_seq \g__tf_wrap_sep_tl
+          { } { \tl_gclear:N \g__tf_wrap_sep_tl }
+        \__tf_do_wrap:nnN { ##1 } { #2 } #3
+      }
+  }
+
 % Internal wrapper that extracts trailing \\ and leading \item
 \cs_new_protected:Nn \__tf_wrap_changed:n
   {
-    \__tf_do_wrap:nnN { #1 } { } \tfchanged
+    \__tf_wrap_lines:nnN { #1 } { } \tfchanged
   }
 
 \cs_new_protected:Nn \__tf_wrap_removed:n
   {
-    \__tf_do_wrap:nnN { #1 } { } \tfremoved
+    \__tf_wrap_lines:nnN { #1 } { } \tfremoved
   }
 
 % Game label wrapping for figures (defined based on package option)
@@ -694,7 +821,10 @@
 
 \cs_new_protected:Nn \__tf_wrap_gamelabel:nn
   {
-    \__tf_do_wrap:nnN { #2 } { #1 } \tfgamelabel
+    % #1 arrives as a scratch tl variable (see \__tf_do_wrap:nnN); park
+    % it in a global one so it survives the group closes between lines
+    \tl_gset:No \g__tf_wrap_extra_tl { #1 }
+    \__tf_wrap_lines:nnN { #2 } { \g__tf_wrap_extra_tl } \tfgamelabel
   }
 
 % Core wrapping logic: extract trailing \\
@@ -750,7 +880,9 @@
   {
     % #1 = content, #2 = extra first arg (empty for tfchanged, game names for gamelabel), #3 = macro
     \tl_set:Nn \l__tf_wrap_content_tl { #1 }
-    \tl_clear:N \l__tf_wrap_suffix_tl
+    % the separator the line splitter took off this line (empty when it
+    % had none, or when the caller did not go through the splitter)
+    \tl_set_eq:NN \l__tf_wrap_suffix_tl \g__tf_wrap_sep_tl
     \__tf_extract_wrap_prefix:N \l__tf_wrap_content_tl
     % Check for trailing \\ by testing if the tl contains \\
     % and trying to remove it from the end
@@ -768,13 +900,25 @@
     % content tl would already be empty by the time #3 grabs its argument.
     % (#2 is o-expanded because figure mode passes a scratch tl variable
     % holding the game-name list, which dies in the same group close.)
-    \tl_gset:Ne \g__tf_wrap_output_tl
+    \tl_if_blank:VTF \l__tf_wrap_content_tl
       {
-        \exp_not:V \l__tf_wrap_prefix_tl
-        \exp_not:N #3
-        \tl_if_empty:nF { #2 } { { \exp_not:o { #2 } } }
-        { \exp_not:V \l__tf_wrap_content_tl }
-        \exp_not:V \l__tf_wrap_suffix_tl
+        % nothing left to decorate -- a blank line, or one that is only
+        % structure (\item, \\): emit that structure, not an empty box
+        \tl_gset:Ne \g__tf_wrap_output_tl
+          {
+            \exp_not:V \l__tf_wrap_prefix_tl
+            \exp_not:V \l__tf_wrap_suffix_tl
+          }
+      }
+      {
+        \tl_gset:Ne \g__tf_wrap_output_tl
+          {
+            \exp_not:V \l__tf_wrap_prefix_tl
+            \exp_not:N #3
+            \tl_if_empty:nF { #2 } { { \exp_not:o { #2 } } }
+            { \exp_not:V \l__tf_wrap_content_tl }
+            \exp_not:V \l__tf_wrap_suffix_tl
+          }
       }
     \tl_use:N \g__tf_wrap_output_tl
   }
@@ -794,7 +938,7 @@
     \group_end:
     % Fallback: use regex to strip trailing \\
     \regex_replace_once:nnNTF { (.*) \c{\\} \s* \Z } { \1 } #1
-      { \tl_set:Nn \l__tf_wrap_suffix_tl { ~ \\ } }
+      { \tl_put_left:Nn \l__tf_wrap_suffix_tl { ~ \\ } }
       { }
   }
 
