@@ -101,6 +101,9 @@
   % the kern scales under sub/superscripts.)
   % \ketbra{x} -> |x><x|  ;  \ketbra[y]{x} -> |x><y|  ;  \Ketbra auto-sizes.
   \newcommand{\ketbra}[2][]{\ensuremath{\mathinner{|{#2}\rangle\mkern-4mu\langle{\ifx\relax#1\relax #2\else #1\fi}|}}}
+  % Projector applied to an inner product, same bowtie kern as \ketbra:
+  % \ketbraket{x}{x|y} -> |x><x|y>.
+  \newcommand{\ketbraket}[2]{\ensuremath{\mathinner{|{#1}\rangle\mkern-4mu\langle{#2}\rangle}}}
   \newcommand{\Ketbra}[2]{\ensuremath{\left|{#1}\vphantom{#2}\right\rangle\mkern-4mu\left\langle{#2}\vphantom{#1}\right|}}
   \providecommand{\listsample}{\hskip2.3pt{\listapp\!\!\mbox{\scriptsize${\$}$\normalsize}}\,}
   \newcommand{\half}{\nicefrac{1}{2}}
@@ -228,7 +231,24 @@
     }}
   
   % Observe register: $\observe \register[B]$
-    \newcommand{\observe}{\mathrel{\raisebox{-0.6pt}{\observeeye}}\,}
+  % With outcome: $\observe[x]$ sets x in front of the eye (where it looks),
+  % its box centred on the eye's height. x follows the math style, so it shrinks
+  % inside arrow labels: $\apply{\observe[x]}$.
+    \newsavebox{\pcobserveeyebox}
+    \newsavebox{\pcobserveargbox}
+    \NewDocumentCommand{\observe}{o}{%
+      \IfNoValueTF{#1}%
+        {\mathrel{\raisebox{-0.6pt}{\observeeye}}\,}%
+        {\mathrel{\mathpalette\pcobserveat{#1}}}%
+    }
+    \newcommand{\pcobserveat}[2]{%
+      \sbox\pcobserveeyebox{\raisebox{-0.6pt}{\observeeye}}%
+      \sbox\pcobserveargbox{$#1#2$}%
+      \usebox\pcobserveeyebox\mkern7mu%
+      \raisebox{\dimexpr(\ht\pcobserveeyebox-\dp\pcobserveeyebox
+                         -\ht\pcobserveargbox+\dp\pcobserveargbox)/2\relax}%
+               {\usebox\pcobserveargbox}%
+    }
   
   % Observe-and-store: $x \obstore \register[X]$
     \newcommand{\obstore}{\leftarrow\mathrel{\mkern-2.0mu}\mathrel{\vcenter{\hbox{\observeeye[0.1]}}}\, }
